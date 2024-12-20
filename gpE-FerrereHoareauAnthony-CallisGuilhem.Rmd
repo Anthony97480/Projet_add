@@ -20,9 +20,6 @@ if (!require("ggplot2")) install.packages("ggplot2")
 library("ggplot2")
 DataBio = read.table("DataProjet3MIC-2425.txt", header=TRUE)
 print(summary(DataBio))
-#plot(x=DataBio$T1_1H_R1, y=DataBio$T1_6H_R1)
-g1 <- ggplot(data=DataBio, aes(x=T1_1H_R1, y=T1_6H_R1, color=ExpT1))+geom_point()
-print(g1)
 ```
 ```{r echo=F}
 #Pour installer les packages
@@ -35,7 +32,7 @@ library(corrplot)
 # A présent, on passe sur l'ACP Centrée. Pour cela, on commence par centrer notre jeu de données.
 #ACP Centrée réduite (Toutes les variables ont la même importance)
 Tt_sH_Rr <- DataBio[c(1: 36)]
-DataBioC <- scale(Tt_sH_Rr, center=TRUE)
+DataBioC <- scale(Tt_sH_Rr, center=TRUE, scale=T)
 
 # On fait la transposée pour avoir : les Tt_sH_Rr décrits par les gènes (J'avour je suis pas sûr à 100% pour ce passage. Sinon on peut enlever la transposée)
 ACP_DataBio_reduite <- PCA(DataBio[c(1:36)],  scale.unit = T, graph = F)
