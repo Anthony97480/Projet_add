@@ -19,7 +19,17 @@ Chargement du jeux de donnée:
 if (!require("ggplot2")) install.packages("ggplot2")
 library("ggplot2")
 DataBio = read.table("DataProjet3MIC-2425.txt", header=TRUE)
+#affichage de la nature des variable du jeu de donnée
+str(DataBio)
+#mise en place des donnée qualitative
+DataBio$ExpT1 = as.factor(DataBio$ExpT1)
+DataBio$ExpT2 = as.factor(DataBio$ExpT2)
+DataBio$ExpT3 = as.factor(DataBio$ExpT3)
 print(summary(DataBio))
+if (!require("corrplot")) install.packages("corrplot")
+library(corrplot)
+M_cor = cor(DataBio[1:36])
+corrplot(M_cor, method="ellipse")
 ```
 ```{r echo=F}
 #Pour installer les packages
