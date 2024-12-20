@@ -30,6 +30,7 @@ if (!require("corrplot")) install.packages("corrplot")
 library(corrplot)
 M_cor = cor(DataBio[1:36])
 corrplot(M_cor, method="ellipse")
+#on constate ici, une faible correlation de la part de T1 envers les autre traitement, et que le traitement 1 fonctionne particulièrement mal à la 6ème heure contrairement aux autres.
 ```
 ```{r echo=F}
 #Pour installer les packages
