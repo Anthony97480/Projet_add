@@ -54,6 +54,79 @@ fviz_pca_ind(ACP_DataBio_reduite, geom = c("point"),col.ind = "cos2", gradient.c
 
 ```
 
+```{r,echo=T, error=F,warning=F,message=F}
+if (!require("forcats")) install.packages("forcats")
+if (!require("ggplot2")) install.packages("ggplot2")
+if (!require("corrplot")) install.packages("corrplot")
+if (!require("FactoMineR")) install.packages("FactoMineR")
+if (!require("factoextra")) install.packages("factoextra")
+if (!require("mclust")) install.packages("mclust")
+if (!require("cluster")) install.packages("cluster")
+if (!require("ppclust")) install.packages("ppclust")
+if (!require("circlize")) install.packages("circlize")
+if (!require("ggalluvial")) install.packages("ggalluvial")
+library(forcats)
+library(ggplot2)
+library(corrplot)
+library(reshape2)
+
+library(FactoMineR)
+library(factoextra)
+
+library(mclust)
+library(cluster)
+library(ppclust)
+
+library(circlize)
+library(ggalluvial)
+
+# Maintenant que l'ACP a été effectuée, on fait un clustering des classes à l'aide de la méthode K-means.
+
+# Avant de débuter le clustering avec la méthode K-means, il faut déterminer le nombre de classes.
+
+Kmax<-20
+reskmeanscl<-matrix(0,nrow=nrow(DataBio),ncol=Kmax-1)
+Iintra<-NULL
+for (k in 1:Kmax){
+  resaux<-kmeans(DataBioCR,centers=k)
+  reskmeanscl[,k-1]<-resaux$cluster
+  Iintra<-c(Iintra,resaux$tot.withinss) # tot.withinss correspond à la somme des composantes au carré des éléments du cluster par cluster
+}
+
+df<-data.frame(K=1:20,Iintra=Iintra)
+ggplot(df,aes(x=K,y=Iintra))+
+  geom_line()+
+  geom_point()+
+  xlab("Nombre de classes")+
+  ylab("Inertie intraclasse")
+
+# Avec cette méthode, on dirait que le coude correspond lorsque le nombre de classes est de 2.
+# On va alors utiliser 2 classes pour la méthode des K-means.
+
+reskmeans<-kmeans(DataBioCR,centers = 2)
+fviz_cluster(reskmeans,data=Tt_sH_Rr,
+             ellipse.type="norm",labelsize=8,
+             geom=c("point"))+ggtitle("")
+#fviz_pca_ind(resacp,col.ind=as.factor(reskmeans$cluster),geom = c("point"),axes=c(1,2))
+
+# A présent, on va essayer une autre méthode, la méthode hiérarchique.
+
+# D'une part, on fait le calcul de la matrice de distances
+dist_matrix <- dist(DataBioCR, method = "euclidean")
+# Clustering hiérarchique avec la méthode de liaison "ward.D2", on peut aussi faire avec "single", "complete","average" ...
+hc <- hclust(dist_matrix, method = "ward.D2") 
+# Afficher le dendrogramme
+fviz_dend(hc,k=2,show_labels = FALSE,
+rect = TRUE, rect_fill = TRUE,palette = "npg",
+rect_border = "npg",
+labels_track_height = 0.8)+ggtitle("")
+
+# (Le temps de chargement est plutôt long, C'est NORMAL)
+
+```
+
+
+
 ```{r echo=F}
 # A présent,on va essayer de construire la matrice DataExpMoy. C'est une matrice de taille G * 18. Le nombre de lignes correspond aux gènes et les colonnes correspondent aux moyennes de T1,T2,T3 pour chaque heure. On a alors :
 # colonne 1 : moyenne(T1_1H_R1/2)
@@ -109,3 +182,73 @@ fviz_eig(ACP_DataExpMoy_reduite,addlabels = TRUE, ylim = c(0, 100), main = "Vale
 fviz_pca_ind(ACP_DataExpMoy_reduite, geom = c("point"),col.ind = "cos2", gradient.cols = c("blue", "red"), repel = TRUE, title = "Projection des DataExpMoy")
 
 ```
+
+```{r,echo=T, error=F,warning=F,message=F}
+if (!require("forcats")) install.packages("forcats")
+if (!require("ggplot2")) install.packages("ggplot2")
+if (!require("corrplot")) install.packages("corrplot")
+if (!require("FactoMineR")) install.packages("FactoMineR")
+if (!require("factoextra")) install.packages("factoextra")
+if (!require("mclust")) install.packages("mclust")
+if (!require("cluster")) install.packages("cluster")
+if (!require("ppclust")) install.packages("ppclust")
+if (!require("circlize")) install.packages("circlize")
+if (!require("ggalluvial")) install.packages("ggalluvial")
+library(forcats)
+library(ggplot2)
+library(corrplot)
+library(reshape2)
+
+library(FactoMineR)
+library(factoextra)
+
+library(mclust)
+library(cluster)
+library(ppclust)
+
+library(circlize)
+library(ggalluvial)
+
+# Maintenant que l'ACP a été effectuée, on fait un clustering des classes à l'aide de la méthode K-means.
+
+# Avant de débuter le clustering avec la méthode K-means, il faut déterminer le nombre de classes.
+
+Kmax<-15
+reskmeanscl<-matrix(0,nrow=nrow(DataExpMoyCR),ncol=Kmax-1)
+Iintra<-NULL
+for (k in 1:Kmax){
+  resaux<-kmeans(DataExpMoyCR,centers=k)
+  reskmeanscl[,k-1]<-resaux$cluster
+  Iintra<-c(Iintra,resaux$tot.withinss) # tot.withinss correspond à la somme des composantes au carré des éléments du cluster par cluster
+}
+
+df<-data.frame(K=1:15,Iintra=Iintra)
+ggplot(df,aes(x=K,y=Iintra))+
+  geom_line()+
+  geom_point()+
+  xlab("Nombre de classes")+
+  ylab("Inertie intraclasse")
+
+# Avec cette méthode, on dirait que le coude correspond lorsque le nombre de classes est de 2.
+# On va alors utiliser 2 classes pour la méthode des K-means.
+
+ExpMoykmeans<-kmeans(DataExpMoyCR,centers = 2)
+fviz_cluster(ExpMoykmeans,data=DataExpMoyCR,ellipse.type="norm",labelsize=8,geom=c("point"))+ggtitle("")
+#fviz_pca_ind(resacp,col.ind=as.factor(ExpMoykmean$cluster),geom = c("point"),axes=c(1,2))
+
+# A présent, on va essayer une autre méthode, la méthode hiérarchique.
+
+# D'une part, on fait le calcul de la matrice de distances
+dist_matrix_ExpMoy <- dist(DataExpMoyCR, method = "euclidean")
+# Clustering hiérarchique avec la méthode de liaison "ward.D2", on peut aussi faire avec "single", "complete","average" ...
+hc_ExpMoy <- hclust(dist_matrix_ExpMoy, method = "ward.D2") 
+# Afficher le dendrogramme
+fviz_dend(hc_ExpMoy,k=2,show_labels = FALSE,
+rect = TRUE, rect_fill = TRUE,palette = "npg",
+rect_border = "npg",
+labels_track_height = 0.8)+ggtitle("")
+# (Le temps de chargement est plutôt long)
+
+```
+
+
