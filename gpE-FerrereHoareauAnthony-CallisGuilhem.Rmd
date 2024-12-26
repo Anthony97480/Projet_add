@@ -77,8 +77,15 @@ g2 <- boxplot(DataBio[c(19:36)], main = "Expression sous T1", col = "lightblue")
 
 #grid.arrange(g1,g2,nrow=2) <-- Cette Ligne ne marche pas et je ne comprends pas pourquoi.
 ```
+Interprétation des Résultats (analyse uni-dimensionnelle):
+À la suite de cette analyse, plusieurs observations et conclusions peuvent être tirées sur les relations entre les variables : (on rappelle que T3 est une combinaison de T1 et T2, indiqué dans le sujet.)
+En ce qui concerne l'analyse Uni-dimensionnelle sur les variables qualitatives, les fréquences des gènes classés comme surexprimés, sous-exprimés et non exprimés sont globalement similaires pour ExpT2 et ExpT3. Cela peut s'expliquer par le fait que T3 est une combinaison de T1 et T2, ce qui entraîne des distributions proches.
+En revanche, ExpT1 se distingue clairement des deux autres, la majorité des gènes dans ExpT1 sont non exprimés, ce qui contraste avec les répartitions plus équilibrées observées pour ExpT2 et ExpT3. Cette observation suggère que le traitement T1 induit très peu de changements dans l'expression des gènes en réponse à un traitement.
 
-Menez une analyse en composantes principales où les Tt sH Rr sont les individus d´ecrits par les gènes.
+Pour les variables quantitatives, on remarque plusieurs choses.
+
+Menez une analyse en composantes principales où les Tt sH Rr sont les individus d´ecrits par les gènes. Premièrement, on remarque que les distributions des valeurs d’expression pour R1 et R2 sont remarquablement similaires. Cela indique une bonne reproductibilité biologique entre les réplicats. La cohérence entre R1 et R2 valide la qualité des données et leur fiabilité pour les analyses ultérieures. Pour les traitements, T2 et T3 sont fortement liés, leurs médianes, leurs intervalles interquartiles sont très similaires. Cela renforce l’idée que T3, étant une combinaison de T1 et T2, hérite principalement des caractéristiques de T2. Cependant, les colonnes T2_1H_R1/R2 et T3_1H_R1/R2 présentent un grand nombre de valeurs aberrantes (outliers), ce qui peut indiquer des réponses génétiques atypiques à 1 heure pour ces traitements. Les intervalles interquartiles pour T1 sont beaucoup plus petits, suggérant que les données pour ce traitement sont plus concentrées autour de la médiane. Toutefois, T1 présente également de nombreux outliers, en plus grand nombre que pour T2 ou T3, ce qui peut indiquer des comportements génétiques spécifiques ou une variabilité accrue pour certains gènes sous ce traitement.
+
 ```{r echo=F}
 #Pour installer les packages
 if (!require("FactoMineR")) install.packages("FactoMineR")
