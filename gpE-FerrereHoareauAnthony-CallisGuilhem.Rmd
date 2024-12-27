@@ -118,6 +118,16 @@ fviz_eig(ACP_DataBio_reduite,addlabels = TRUE, ylim = c(0, 100), main = "Valeurs
 fviz_pca_ind(ACP_DataBio_reduite, geom = c("point"),col.ind = "cos2", gradient.cols = c("blue", "red"), repel = TRUE, title = "Projection des individus (Tt_sH_Rr)")
 
 ```
+Interprétation des Résultats : 
+
+En premier lieu, lorsqu'on regarde notre graphe des valeurs propres, on remarque bien que les 2 premières dimensions représentent environ 80% de la variance, ces deux dimensions sont alors suffisantes pour résumer les données.
+Il ne faut pas oublier pour la suite que la dimension 1 (71,1%) a beaucoup plus "d'information" que la dimension 2 (10,5%).
+Chaque point sur notre ACP correspond à une colonne Tt_sH_Rr et donc aux variables.
+
+Nous avons pris la décision de ne pas analyser le graphe des variables car trop de gènes pour l'analyser et tirer des conclusions correctes. Il est alors compliqué d'étudier la contribution des gènes. On ne peut pas résumer le nuage de points à l'aide de deux méta-variables dans ce cas précis.
+
+Cependant, il reste possible d'étudier la contribution relative des individus. Les individus les plus "intéressants" sont ceux qui sont les plus éloignés de l'individu moyen et ceux dont la contribbution à la dispersion est la plus importante. Ici, on remarque que la variable la plus intéressante est T1_6H_R2.
+Elle est éloignée du centre, indiquant une réponse atypique ou spécifique par rapport aux autres combinaisons traitement-heure-réplicat et sa position dans l’espace principal suggère qu’elle joue un rôle important dans la variation observée dans les données.
 
 Faites une classification non supervisée (clustering) de ces données afin de regrouper les Tt sH Rr.
 en plusieurs classes homog`enes.
@@ -192,9 +202,15 @@ labels_track_height = 0.8)+ggtitle("")
 
 ```
 
+Interprétation du Clustering :
+En premier lieu, on remarque que nos 2 Clustering (avec méthode K-means et méthode hiérarchique) nous donnent les même résultats, on obtient les mêmes groupes avec le même nombre d'individus pour les 2 clustering.
+Pour le Clustering avec la méthode des K-means, on remarque que les clusters sont bien séparés, on peut en déduire que les groupes d'individus sont nettement différents.
+
 Préliminairement, construisez un jeu de données DataExpMoy contenant la moyenne des expressions sur les réplicats de chaque g`ene, pour chaque traitement et chaque heure. DataExpMoy est
 donc une matrice de taille G × 18. Vous pourrez utiliser les variables ExpT1, ExpT2 et ExpT3
 pour commenter vos résultats des questions suivantes.
+
+
 
 Menez une analyse en composantes principales pour les gènes à partir du jeu de données DataExpMoy.
 
@@ -253,6 +269,16 @@ fviz_eig(ACP_DataExpMoy_reduite,addlabels = TRUE, ylim = c(0, 100), main = "Vale
 fviz_pca_ind(ACP_DataExpMoy_reduite, geom = c("point"),col.ind = "cos2", gradient.cols = c("blue", "red"), repel = TRUE, title = "Projection des DataExpMoy")
 
 ```
+
+Interprétation des Résultats : 
+
+En premier lieu, lorsqu'on regarde notre graphe des valeurs propres, on remarque bien que les 2 premières dimensions représentent environ 81-82% de la variance, ces deux dimensions sont alors suffisantes pour résumer les données.
+
+Chaque point sur notre ACP correspond à un gène.
+
+Dans ce cas, il est très pertinant d'analyser le graphe des variables car le graphe semble plus lisible et semble apporter des informations pertinantes. On remarque quelque chose de très intéressant notamment à l'aide de la deuxième meta-variable. D'après le graphe, on a l'impression que cet axe mesure l'appartenance d'un gène à un traitement. On remarque que les valeurs positives correspondent au traitement 1, les valeurs négatives au traitement 2 et les valeurs positives proches ou égal à 0 sont les gènes du traitement 3. (pas terminé)
+
+
 
 Faites une classification non supervisée (clustering) des gènes à partir de leur expression (DataExpMoy) afin d’obtenir des classes de gènes homogènes (ayant la même évolution d’expression).
 
