@@ -89,6 +89,11 @@ Cela renforce l’idée que T3, étant une combinaison de T1 et T2, hérite prin
 Les intervalles interquartiles pour T1 sont beaucoup plus petits, suggérant que les données pour ce traitement sont plus concentrées autour de la médiane. 
 Toutefois, T1 présente également de nombreux outliers, en plus grand nombre que pour T2 ou T3, ce qui peut indiquer des comportements génétiques spécifiques ou une variabilité accrue pour certains gènes sous ce traitement.
 
+A présent, passons à l'analyse Bi-dimensionnelle ...
+
+
+De manière générale, les variables sont fortement corrélées, ce qui implique qu'une forte réduction des dimensions est attendue.
+ 
 
 Menez une analyse en composantes principales où les Tt sH Rr sont les individus d´ecrits par les gènes.
 
