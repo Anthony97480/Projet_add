@@ -107,7 +107,7 @@ library(factoextra)
 library(corrplot)
 # A présent, on passe sur l'ACP Centrée. Pour cela, on commence par centrer notre jeu de données.
 #ACP Centrée réduite (Toutes les variables ont la même importance)
-Tt_sH_Rr <- DataBio[c(1: 36)]
+Tt_sH_Rr <- t(DataBio[c(1: 36)])
 DataBioCR <- scale(Tt_sH_Rr, center=TRUE, scale=T)
 
 # On fait la transposée pour avoir : les Tt_sH_Rr décrits par les gènes (J'avour je suis pas sûr à 100% pour ce passage. Sinon on peut enlever la transposée)
@@ -260,7 +260,7 @@ mean_sur_T1_6H <- mean(DataExpMoy_full[DataExpMoy_full$ExpT1 == "Sur", "T1_6H"])
 print(mean_sur_T1_6H)
 # On fait la ACP de ce nouveau jeu de données
 
-DataExpMoyCR <- scale(t(DataExpMoy), center=TRUE, scale=T)
+DataExpMoyCR <- scale(DataExpMoy, center=TRUE, scale=T)
 # On fait la transposée pour avoir : les Tt_sH_Rr décrits par les gènes (J'avour je suis pas sûr à 100% pour ce passage. Sinon on peut enlever la transposée)
 ACP_DataExpMoy_reduite <- PCA(DataExpMoyCR,  scale.unit = T, graph = F)
 ACP_DataExpMoy_reduite$eig
