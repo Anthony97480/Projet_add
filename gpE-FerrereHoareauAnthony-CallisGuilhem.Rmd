@@ -72,8 +72,8 @@ ggplot(DataBio, aes(x = ExpT2)) + geom_bar(fill = "green")
 ggplot(DataBio, aes(x = ExpT3)) + geom_bar(fill = "red")
 
 # Pour les variables quantitatives
-g1 <- boxplot(DataBio[c(1:18)], main = "Expression sous T1", col = "lightblue")
-g2 <- boxplot(DataBio[c(19:36)], main = "Expression sous T1", col = "lightblue")
+g1 <- boxplot(DataBio[c(1:18)], main = "Expression sous R1", col = "lightblue")
+g2 <- boxplot(DataBio[c(19:36)], main = "Expression sous R2", col = "lightblue")
 
 #grid.arrange(g1,g2,nrow=2) <-- Cette Ligne ne marche pas et je ne comprends pas pourquoi.
 ```
@@ -89,13 +89,91 @@ Cela renforce l’idée que T3, étant une combinaison de T1 et T2, hérite prin
 Les intervalles interquartiles pour T1 sont beaucoup plus petits, suggérant que les données pour ce traitement sont plus concentrées autour de la médiane. 
 Toutefois, T1 présente également de nombreux outliers, en plus grand nombre que pour T2 ou T3, ce qui peut indiquer des comportements génétiques spécifiques ou une variabilité accrue pour certains gènes sous ce traitement.
 
-A présent, passons à l'analyse Bi-dimensionnelle ...
+A présent, passons à l'analyse Bi-dimensionnelle.
+Pour celle-ci j'ai décider afin de bien comprendre les relation qu'il y pourrait y avoir entre les variable, d'en faire 3.
 
+Une première sur les relation entre les expression des gène lors des traitements.
+```{r echo=F}
+#print("T1 & T2")
+#prop.table(table(ExpT$ExpT1, ExpT$ExpT2), margin=2)
+ggplot(DataBio, aes(fill=ExpT$ExpT1, x=ExpT$ExpT2))+geom_bar(position="fill")
+
+#print("T1 & T3")
+#prop.table(table(ExpT$ExpT1, ExpT$ExpT3), margin=2)
+ggplot(DataBio, aes(fill=ExpT$ExpT1, x=ExpT$ExpT3))+geom_bar(position="fill")
+
+#print("T3 & T2")
+#prop.table(table(ExpT$ExpT3, ExpT$ExpT2), margin=1)
+ggplot(DataBio, aes(x=ExpT$ExpT3, fill=ExpT$ExpT2))+geom_bar(position="fill")
+
+```
+Interprétation des résultats:
+On constate ici que les relation entre l'expressions des gène sur le 2ème et 3ème traitement sont très similaire vis à vis du premier traitement. En effet, la grande majorité, si ce n'est la totalité des gène non exprimier des traitement 2 et 3 sont sur exprimer pour le traitement 1 et que les gène sur et sous exprimer des traitement 2 et 3 sont majoritairement non exprimer pour le traitement 1. On peut donc on conclure ici que le traitement 1 est quasiement l'opposé du traitement 2 en terme d'expression de gène et que grace au troisième graphique, le traitement 3 étant une combinaison des 2 autres, est quasiement identique au traitement 2 en terme d'expression des gène sur exprimer et sous exprimer bien qu'on note une différence minime pour les gène non exprimer. Ce qui est cohérent avec les observation de l'analyse uni-dimentionnel de l'expression des gènes.
+
+```{r echo=F}
+if (!require("BioStatR")) install.packages("BioStatR")
+library(BioStatR)
+T1 <- DataBio[c(1:6, 19:24)]
+T2 <- DataBio[c(7:12, 25:30)]
+T3 <- DataBio[c(13:18, 31:36)]
+Lt1_expt1 <- matrix(1:36, ncol=3)
+rownames(Lt1_expt1) = c(paste(1:6,"H_R", 1, sep = ""), paste(1:6,"H_R", 2, sep = ""))
+colnames(Lt1_expt1) = c(paste("Heure", sep = ""), paste("Replicat", sep = ""), paste("Liaison_T1ExpT1", sep = ""))
+Lt2_expt2 <- matrix(1:36, ncol=3)
+rownames(Lt2_expt2) = c(paste(1:6,"H_R", 1, sep = ""), paste(1:6,"H_R", 2, sep = ""))
+colnames(Lt2_expt2) = c(paste("Heure", sep = ""), paste("Replicat", sep = ""), paste("Liaison_T2ExpT2", sep = ""))
+Lt3_expt3 <- matrix(1:36, ncol=3)
+rownames(Lt3_expt3) = c(paste(1:6,"H_R", 1, sep = ""), paste(1:6,"H_R", 2, sep = ""))
+colnames(Lt3_expt3) = c(paste("Heure", sep = ""), paste("Replicat", sep = ""), paste("Liaison_T3ExpT3", sep = ""))
+for (i in 1:12){
+  Lt1_expt1[i,3] = eta2(T1[,i], ExpT$ExpT1)
+  Lt2_expt2[i,3] = eta2(T2[,i], ExpT$ExpT2)
+  Lt3_expt3[i,3] = eta2(T3[,i], ExpT$ExpT3)
+  if (i<=6){
+    Lt1_expt1[i,1] = i
+    Lt2_expt2[i,1] = i
+    Lt3_expt3[i,1] = i
+    Lt1_expt1[i,2] = 1
+    Lt2_expt2[i,2] = 1
+    Lt3_expt3[i,2] = 1
+  } else {
+    Lt1_expt1[i,1] = i - 6
+    Lt2_expt2[i,1] = i - 6
+    Lt3_expt3[i,1] = i - 6
+    Lt1_expt1[i,2] = 2
+    Lt2_expt2[i,2] = 2
+    Lt3_expt3[i,2] = 2
+  }
+} 
+
+Lt1_expt1 = data.frame(Lt1_expt1)
+Lt2_expt2 = data.frame(Lt2_expt2)
+Lt3_expt3 = data.frame(Lt3_expt3)
+Lt1_expt1[,2] = as.factor(Lt1_expt1[,2])
+Lt2_expt2[,2] = as.factor(Lt2_expt2[,2])
+Lt3_expt3[,2] = as.factor(Lt3_expt3[,2])
+
+ggplot(Lt1_expt1, aes(x=Heure, y=Liaison_T1ExpT1, colour=Replicat))+geom_line()
+ggplot(Lt2_expt2, aes(x=Heure, y=Liaison_T2ExpT2, colour=Replicat))+geom_line()
+ggplot(Lt3_expt3, aes(x=Heure, y=Liaison_T3ExpT3, colour=Replicat))+geom_line()
+```
+Cette analyse-ci nous montre différent graphique sur l'évolution des degré de liaison entre les traitement et l'expression de leur gène au cours du temps.
+On constate pour le premier traitement que malgré une évolution croissante du degré de liaison celui-ci très variant en fonction du temps que cela soit pour le premier ou le second réplicat avec des diminution à 2h, 3h et 5h. De plus ce degré à un maximum de 0.56 pour le premier réplicat et 0.46 pour le deuxième réplicat. Ce degré de liaison ici reflète la prximoté entre l'évolution de l'expression des gènes considérer au fils du temps lors du traitement et l'expression de ces même gène au bout de 6h. 
+```{r}
+corT1T2 = cor(T1, T2)
+corT1T3 = cor(T1, T3)
+corT2T3 = cor(T2, T3)
+
+corrplot(corr = corT1T2, method="ellipse")
+corrplot(corr = corT1T3, method="ellipse")
+corrplot(corr = corT2T3, method="ellipse")
+```
+T2 et T3 se comporte de la même manière
 
 De manière générale, les variables sont fortement corrélées, ce qui implique qu'une forte réduction des dimensions est attendue.
  
 
-Menez une analyse en composantes principales où les Tt sH Rr sont les individus d´ecrits par les gènes.
+Menez une analyse en composantes principales où les Tt_sH_Rr sont les individus d'écrits par les gènes.
 
 ```{r echo=F}
 #Pour installer les packages
@@ -166,7 +244,7 @@ reskmeanscl<-matrix(0,nrow=nrow(DataBio),ncol=Kmax-1)
 Iintra<-NULL
 for (k in 1:Kmax){
   resaux<-kmeans(DataBioCR,centers=k)
-  reskmeanscl[,k-1]<-resaux$cluster
+  reskmeanscl<-resaux$cluster #pourquoi le [,k-1] ?
   Iintra<-c(Iintra,resaux$tot.withinss) # tot.withinss correspond à la somme des composantes au carré des éléments du cluster par cluster
 }
 
