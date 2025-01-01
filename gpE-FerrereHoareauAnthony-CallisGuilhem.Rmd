@@ -93,6 +93,7 @@ A présent, passons à l'analyse Bi-dimensionnelle.
 Pour celle-ci j'ai décider afin de bien comprendre les relation qu'il y pourrait y avoir entre les variable, d'en faire 3.
 
 Une première sur les relation entre les expression des gène lors des traitements.
+
 ```{r echo=F}
 #print("T1 & T2")
 #prop.table(table(ExpT$ExpT1, ExpT$ExpT2), margin=2)
@@ -157,6 +158,7 @@ ggplot(Lt1_expt1, aes(x=Heure, y=Liaison_T1ExpT1, colour=Replicat))+geom_line()
 ggplot(Lt2_expt2, aes(x=Heure, y=Liaison_T2ExpT2, colour=Replicat))+geom_line()
 ggplot(Lt3_expt3, aes(x=Heure, y=Liaison_T3ExpT3, colour=Replicat))+geom_line()
 ```
+
 Cette analyse-ci nous montre différent graphique sur l'évolution des degré de liaison entre les traitement et l'expression de leur gène au cours du temps.
 On constate pour le premier traitement que malgré une évolution croissante du degré de liaison celui-ci très variant en fonction du temps que cela soit pour le premier ou le second réplicat avec des diminution à 2h, 3h et 5h. De plus ce degré à un maximum de 0.56 pour le premier réplicat et 0.46 pour le deuxième réplicat. Ce degré de liaison ici reflète la prximoté entre l'évolution de l'expression des gènes considérer au fils du temps lors du traitement et l'expression de ces même gène au bout de 6h. 
 ```{r}
