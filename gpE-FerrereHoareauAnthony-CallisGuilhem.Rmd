@@ -26,7 +26,7 @@ str(DataBio)
 DataBio$ExpT1 = as.factor(DataBio$ExpT1)
 DataBio$ExpT2 = as.factor(DataBio$ExpT2)
 DataBio$ExpT3 = as.factor(DataBio$ExpT3)
-print(summary(DataBio))
+#print(summary(DataBio))
 if (!require("corrplot")) install.packages("corrplot")
 library(corrplot)
 M_cor = cor(DataBio[1:36])
@@ -67,15 +67,15 @@ freqT3<-data.frame(effT3=c(effT3),Freq=c(effT3)/sum(effT3))
 #print(freqT3)
 
 # GGplot des variables qualitatives (Exp T1,T2,T3)
-ggplot(DataBio, aes(x = ExpT1)) + geom_bar(fill = "blue")
-ggplot(DataBio, aes(x = ExpT2)) + geom_bar(fill = "green")
-ggplot(DataBio, aes(x = ExpT3)) + geom_bar(fill = "red")
+g1 = ggplot(DataBio, aes(x = ExpT1)) + geom_bar(fill = "blue")
+g2 = ggplot(DataBio, aes(x = ExpT2)) + geom_bar(fill = "green")
+g3 = ggplot(DataBio, aes(x = ExpT3)) + geom_bar(fill = "red")
 
 # Pour les variables quantitatives
-g1 <- boxplot(DataBio[c(1:18)], main = "Expression sous R1", col = "lightblue")
-g2 <- boxplot(DataBio[c(19:36)], main = "Expression sous R2", col = "lightblue")
+boxplot(DataBio[c(1:18)], main = "Expression sous R1", col = "lightblue")
+boxplot(DataBio[c(19:36)], main = "Expression sous R2", col = "lightblue")
 
-#grid.arrange(g1,g2,nrow=2) <-- Cette Ligne ne marche pas et je ne comprends pas pourquoi.
+grid.arrange(g1, g2, g3, nrow=2) #<-- Cette Ligne ne marche pas et je ne comprends pas pourquoi.
 ```
 Interprétation des Résultats (analyse uni-dimensionnelle):
 À la suite de cette analyse, plusieurs observations et conclusions peuvent être tirées sur les relations entre les variables : (on rappelle que T3 est une combinaison de T1 et T2, indiqué dans le sujet.)
@@ -97,16 +97,17 @@ Une première sur les relation entre les expression des gène lors des traitemen
 ```{r echo=F}
 #print("T1 & T2")
 #prop.table(table(ExpT$ExpT1, ExpT$ExpT2), margin=2)
-ggplot(DataBio, aes(fill=ExpT$ExpT1, x=ExpT$ExpT2))+geom_bar(position="fill")
+g1 <- ggplot(DataBio, aes(fill=ExpT$ExpT1, x=ExpT$ExpT2))+geom_bar(position="fill")
 
 #print("T1 & T3")
 #prop.table(table(ExpT$ExpT1, ExpT$ExpT3), margin=2)
-ggplot(DataBio, aes(fill=ExpT$ExpT1, x=ExpT$ExpT3))+geom_bar(position="fill")
+g2 <- ggplot(DataBio, aes(fill=ExpT$ExpT1, x=ExpT$ExpT3))+geom_bar(position="fill")
 
 #print("T3 & T2")
 #prop.table(table(ExpT$ExpT3, ExpT$ExpT2), margin=1)
-ggplot(DataBio, aes(x=ExpT$ExpT3, fill=ExpT$ExpT2))+geom_bar(position="fill")
+g3 <- ggplot(DataBio, aes(x=ExpT$ExpT3, fill=ExpT$ExpT2))+geom_bar(position="fill")
 
+grid.arrange(g1, g2, g3, nrow=2)
 ```
 Interprétation des résultats:
 On constate ici que les relation entre l'expressions des gène sur le 2ème et 3ème traitement sont très similaire vis à vis du premier traitement. En effet, la grande majorité, si ce n'est la totalité des gène non exprimier des traitement 2 et 3 sont sur exprimer pour le traitement 1 et que les gène sur et sous exprimer des traitement 2 et 3 sont majoritairement non exprimer pour le traitement 1. On peut donc on conclure ici que le traitement 1 est quasiement l'opposé du traitement 2 en terme d'expression de gène et que grace au troisième graphique, le traitement 3 étant une combinaison des 2 autres, est quasiement identique au traitement 2 en terme d'expression des gène sur exprimer et sous exprimer bien qu'on note une différence minime pour les gène non exprimer. Ce qui est cohérent avec les observation de l'analyse uni-dimentionnel de l'expression des gènes.
@@ -154,25 +155,36 @@ Lt1_expt1[,2] = as.factor(Lt1_expt1[,2])
 Lt2_expt2[,2] = as.factor(Lt2_expt2[,2])
 Lt3_expt3[,2] = as.factor(Lt3_expt3[,2])
 
-ggplot(Lt1_expt1, aes(x=Heure, y=Liaison_T1ExpT1, colour=Replicat))+geom_line()
-ggplot(Lt2_expt2, aes(x=Heure, y=Liaison_T2ExpT2, colour=Replicat))+geom_line()
-ggplot(Lt3_expt3, aes(x=Heure, y=Liaison_T3ExpT3, colour=Replicat))+geom_line()
+g1 = ggplot(Lt1_expt1, aes(x=Heure, y=Liaison_T1ExpT1, colour=Replicat))+geom_line()
+g2 = ggplot(Lt2_expt2, aes(x=Heure, y=Liaison_T2ExpT2, colour=Replicat))+geom_line()
+g3 = ggplot(Lt3_expt3, aes(x=Heure, y=Liaison_T3ExpT3, colour=Replicat))+geom_line()
+
+grid.arrange(g1, g2, g3, nrow=2)
 ```
 
+#Peut être faire la même analyse mais avec T1 et les gène de T2 (je l'ai regarder mais pas mis en graph j'attend ton avis)#
+Montre le fait que T1 bien que éloigné en terme de fonctionnement et de comportement comparé aux deux autres, à tendence au bout de 4h à se rapprocher de l'expression des gène de T2 à auteur de 40% avant de s'éloigné à nouveau (induisant un comportement différent à long terme mais des réaction à peu près similaire des gène des plante à cours terme.)
+
+
+
+#analyse de de chaque traitement avec leur gènes#
 Cette analyse-ci nous montre différent graphique sur l'évolution des degré de liaison entre les traitement et l'expression de leur gène au cours du temps.
-On constate pour le premier traitement que malgré une évolution croissante du degré de liaison celui-ci très variant en fonction du temps que cela soit pour le premier ou le second réplicat avec des diminution à 2h, 3h et 5h. De plus ce degré à un maximum de 0.56 pour le premier réplicat et 0.46 pour le deuxième réplicat. Ce degré de liaison ici reflète la prximoté entre l'évolution de l'expression des gènes considérer au fils du temps lors du traitement et l'expression de ces même gène au bout de 6h. 
+Ce degré de liaison ici reflète la prximoté entre l'évolution de l'expression des gènes considérer au fils du temps lors du traitement et l'expression de ces même gène au bout de 6h.
+On constate pour le premier traitement que malgré une évolution croissante du degré de liaison celui-ci très variant en fonction du temps que cela soit pour le premier ou le second réplicat avec des diminution à 2h, 3h et 5h. De plus ce degré à un maximum de 0.56 pour le premier réplicat et 0.46 pour le deuxième réplicat. Indicant une forte évolution au cours du temps des gène de la plante lors du traitement ainsi que ce traitement est plus long à agir que les deux autres puisque n'étant semblable qu'à 50% au résultat final attendu pour ce traitement au bout de 6h.
+Les deux autres traitement quant à eux, ayant de forte similarité comme constaté précédement, ont une courbe d'évolution du degré de liaison très similaire, on peut donc en conclure que ces deux traitement agisse dans un même temps et bien plus rapidement que le premier traitement avec beaucoup moins de variation des l'expression des gène au cours du temps, puisque les courbe étant des courbe logarithmique, on constate qu'il à de fort changement dans l'expression des gênes au départ mais que ces changement diminute en fonction du temps.
+On peut donc en déduire que contrairement au premier traitement qui lui est fortement actif sur la plante tout au long de l'expérience malgré une forte présence de gène non actif, et prend beaucoup de temps à agir, les deux autres traitement quant à eux, sont principalement actif sur la plante au début de l'expérience et leur influence et a variation de l'expression des gène diminute avec le temps ils sont donc en comparaison au résultat mesuré à 6h bien plus rapide et efficace que le traitement 1. Ce qui est cohérent avec les observation réaliser jusqu'à présents.
 ```{r}
 corT1T2 = cor(T1, T2)
 corT1T3 = cor(T1, T3)
 corT2T3 = cor(T2, T3)
 
-corrplot(corr = corT1T2, method="ellipse")
-corrplot(corr = corT1T3, method="ellipse")
-corrplot(corr = corT2T3, method="ellipse")
+g1 = corrplot(corr = corT1T2, method="ellipse")
+g2 = corrplot(corr = corT1T3, method="ellipse")
+g3 = corrplot(corr = corT2T3, method="ellipse")
 ```
-T2 et T3 se comporte de la même manière
+Ici en comparant l'expression des gène au cours du temps des différent des traitement, on remarque que le traitement 1 est très peu corrélé avec le traitement 2 voir même corrélé négativement pour ce qui est de la 6ème heure du réplicat 2, un même constat que l'on peu faire vis à vis du traitement 3 (bien que moins visible, puisqu'étant une combinaison du traitement 1 et 2), appuuyant sur le fait que le traitement 1 se comporte différemment des deux autres. Les traitement T2 et T3 quant à eux sont similaire dans leur variation, en effet ils sont très corrélé positivement quelque soit l'heure à laquel on a réaliser les mesure, ils se comporte donc de la même manière et sont semblable en terme d'évolution de l'expression des gènes, confirmant le fait que le traitement T3 hérite principalement des caractéristique du traitement T2
 
-De manière générale, les variables sont fortement corrélées, ce qui implique qu'une forte réduction des dimensions est attendue.
+De manière générale en dehors du premier traitement peu corréler positiviement voir négatiment à certainte heures des deux autres, les variables sont fortement corrélées positivement, ce qui implique qu'une forte réduction des dimensions est attendue pour l'ACP.
  
 
 Menez une analyse en composantes principales où les Tt_sH_Rr sont les individus d'écrits par les gènes.
@@ -193,9 +205,11 @@ DataBioCR <- scale(Tt_sH_Rr, center=TRUE, scale=T)
 # On fait la transposée pour avoir : les Tt_sH_Rr décrits par les gènes (J'avour je suis pas sûr à 100% pour ce passage. Sinon on peut enlever la transposée)
 ACP_DataBio_reduite <- PCA(DataBio[c(1:36)],  scale.unit = T, graph = F)
 ACP_DataBio_reduite$eig
-fviz_eig(ACP_DataBio_reduite,addlabels = TRUE, ylim = c(0, 100), main = "Valeurs propres")
+g1 = fviz_eig(ACP_DataBio_reduite,addlabels = TRUE, ylim = c(0, 100), main = "Valeurs propres")
 # Projection des individus
-fviz_pca_ind(ACP_DataBio_reduite, geom = c("point"),col.ind = "cos2", gradient.cols = c("blue", "red"), repel = TRUE, title = "Projection des individus (Tt_sH_Rr)")
+g2 = fviz_pca_ind(ACP_DataBio_reduite, geom = c("point"),col.ind = "cos2", gradient.cols = c("blue", "red"), repel = TRUE, title = "Projection des individus (Tt_sH_Rr)")
+
+grid.arrange(g1, g2, nrow=2)
 
 ```
 Interprétation des Résultats : 
@@ -251,7 +265,7 @@ for (k in 1:Kmax){
 }
 
 df<-data.frame(K=1:20,Iintra=Iintra)
-ggplot(df,aes(x=K,y=Iintra))+
+g1 = ggplot(df,aes(x=K,y=Iintra))+
   geom_line()+
   geom_point()+
   xlab("Nombre de classes")+
@@ -261,7 +275,7 @@ ggplot(df,aes(x=K,y=Iintra))+
 # On va alors utiliser 2 classes pour la méthode des K-means.
 
 reskmeans<-kmeans(DataBioCR,centers = 2)
-fviz_cluster(reskmeans,data=Tt_sH_Rr,
+g2 = fviz_cluster(reskmeans,data=Tt_sH_Rr,
              ellipse.type="norm",labelsize=8,
              geom=c("point"))+ggtitle("")
 #fviz_pca_ind(resacp,col.ind=as.factor(reskmeans$cluster),geom = c("point"),axes=c(1,2))
@@ -273,12 +287,14 @@ dist_matrix <- dist(DataBioCR, method = "euclidean")
 # Clustering hiérarchique avec la méthode de liaison "ward.D2", on peut aussi faire avec "single", "complete","average" ...
 hc <- hclust(dist_matrix, method = "ward.D2") 
 # Afficher le dendrogramme
-fviz_dend(hc,k=2,show_labels = FALSE,
+g3 = fviz_dend(hc,k=2,show_labels = FALSE,
 rect = TRUE, rect_fill = TRUE,palette = "npg",
 rect_border = "npg",
 labels_track_height = 0.8)+ggtitle("")
 
 # (Le temps de chargement est plutôt long, C'est NORMAL)
+
+grid.arrange(g1, g2, g3, nrow=2)
 
 ```
 
@@ -344,9 +360,11 @@ DataExpMoyCR <- scale(DataExpMoy, center=TRUE, scale=T)
 # On fait la transposée pour avoir : les Tt_sH_Rr décrits par les gènes (J'avour je suis pas sûr à 100% pour ce passage. Sinon on peut enlever la transposée)
 ACP_DataExpMoy_reduite <- PCA(DataExpMoyCR,  scale.unit = T, graph = F)
 ACP_DataExpMoy_reduite$eig
-fviz_eig(ACP_DataExpMoy_reduite,addlabels = TRUE, ylim = c(0, 100), main = "Valeurs propres")
+g1 = fviz_eig(ACP_DataExpMoy_reduite,addlabels = TRUE, ylim = c(0, 100), main = "Valeurs propres")
 # Projection des DataExpMoy
-fviz_pca_ind(ACP_DataExpMoy_reduite, geom = c("point"),col.ind = "cos2", gradient.cols = c("blue", "red"), repel = TRUE, title = "Projection des DataExpMoy")
+g2 = fviz_pca_ind(ACP_DataExpMoy_reduite, geom = c("point"),col.ind = "cos2", gradient.cols = c("blue", "red"), repel = TRUE, title = "Projection des DataExpMoy")
+
+grid.arrange(g1, g2, nrow=2)
 
 ```
 
@@ -402,7 +420,7 @@ for (k in 1:Kmax){
 }
 
 df<-data.frame(K=1:15,Iintra=Iintra)
-ggplot(df,aes(x=K,y=Iintra))+
+g1 = ggplot(df,aes(x=K,y=Iintra))+
   geom_line()+
   geom_point()+
   xlab("Nombre de classes")+
@@ -412,7 +430,7 @@ ggplot(df,aes(x=K,y=Iintra))+
 # On va alors utiliser 2 classes pour la méthode des K-means.
 
 ExpMoykmeans<-kmeans(DataExpMoyCR,centers = 2)
-fviz_cluster(ExpMoykmeans,data=DataExpMoyCR,ellipse.type="norm",labelsize=8,geom=c("point"))+ggtitle("")
+g2 = fviz_cluster(ExpMoykmeans,data=DataExpMoyCR,ellipse.type="norm",labelsize=8,geom=c("point"))+ggtitle("")
 #fviz_pca_ind(resacp,col.ind=as.factor(ExpMoykmean$cluster),geom = c("point"),axes=c(1,2))
 
 # A présent, on va essayer une autre méthode, la méthode hiérarchique.
@@ -422,12 +440,13 @@ dist_matrix_ExpMoy <- dist(DataExpMoyCR, method = "euclidean")
 # Clustering hiérarchique avec la méthode de liaison "ward.D2", on peut aussi faire avec "single", "complete","average" ...
 hc_ExpMoy <- hclust(dist_matrix_ExpMoy, method = "ward.D2") 
 # Afficher le dendrogramme
-fviz_dend(hc_ExpMoy,k=2,show_labels = FALSE,
+g3 = fviz_dend(hc_ExpMoy,k=2,show_labels = FALSE,
 rect = TRUE, rect_fill = TRUE,palette = "npg",
 rect_border = "npg",
 labels_track_height = 0.8)+ggtitle("")
 # (Le temps de chargement est plutôt long)
 
+grid.arrange(g1, g2, g3, nrow=2)
 ```
 Faites une classification non supervisée (clustering) des gènes à partir des variables ExpT1, ExpT2 et ExpT3. Comparez avec les résultats de la question précédente.
 
