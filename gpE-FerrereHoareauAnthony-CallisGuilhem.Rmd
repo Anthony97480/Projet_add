@@ -261,6 +261,7 @@ library(ggalluvial)
 
 # Avant de débuter le clustering avec la méthode K-means, il faut déterminer le nombre de classes.
 
+set.seed(123)
 Kmax<-20
 reskmeanscl<-matrix(0,nrow=nrow(DataBioCR),ncol=Kmax)
 Iintra<-NULL
@@ -280,7 +281,7 @@ g1 = ggplot(df,aes(x=K,y=Iintra))+
 # Avec cette méthode, on dirait que le coude correspond lorsque le nombre de classes est de 2.
 # On va alors utiliser 2 classes pour la méthode des K-means.
 
-reskmeans<-kmeans(DataBioCR,centers = 2)
+reskmeans<-kmeans(DataBioCR,centers = 3)
 g2 = fviz_cluster(reskmeans,data=Tt_sH_Rr,
              ellipse.type="norm",labelsize=8,
              geom=c("point"))+ggtitle("")
@@ -293,7 +294,7 @@ dist_matrix <- dist(DataBioCR, method = "euclidean")
 # Clustering hiérarchique avec la méthode de liaison "ward.D2", on peut aussi faire avec "single", "complete","average" ...
 hc <- hclust(dist_matrix, method = "ward.D2") 
 # Afficher le dendrogramme
-g3 = fviz_dend(hc,k=2,show_labels = FALSE,
+g3 = fviz_dend(hc,k=3,show_labels = FALSE,
 rect = TRUE, rect_fill = TRUE,palette = "npg",
 rect_border = "npg",
 labels_track_height = 0.8)+ggtitle("")
@@ -416,16 +417,17 @@ library(ggalluvial)
 
 # Avant de débuter le clustering avec la méthode K-means, il faut déterminer le nombre de classes.
 
+set.seed(123)
 Kmax<-15
-reskmeanscl<-matrix(0,nrow=nrow(DataExpMoyCR),ncol=Kmax-1)
+reskmeanscl<-matrix(0,nrow=nrow(DataExpMoyCR),ncol=Kmax)
 Iintra<-NULL
-for (k in 1:Kmax){
+for (k in 2:Kmax){
   resaux<-kmeans(DataExpMoyCR,centers=k)
-  reskmeanscl[,k-1]<-resaux$cluster
+  reskmeanscl[,k]<-resaux$cluster
   Iintra<-c(Iintra,resaux$tot.withinss) # tot.withinss correspond à la somme des composantes au carré des éléments du cluster par cluster
 }
 
-df<-data.frame(K=1:15,Iintra=Iintra)
+df<-data.frame(K=2:15,Iintra=Iintra)
 g1 = ggplot(df,aes(x=K,y=Iintra))+
   geom_line()+
   geom_point()+
@@ -435,7 +437,7 @@ g1 = ggplot(df,aes(x=K,y=Iintra))+
 # Avec cette méthode, on dirait que le coude correspond lorsque le nombre de classes est de 2.
 # On va alors utiliser 2 classes pour la méthode des K-means.
 
-ExpMoykmeans<-kmeans(DataExpMoyCR,centers = 2)
+ExpMoykmeans<-kmeans(DataExpMoyCR,centers = 6)
 g2 = fviz_cluster(ExpMoykmeans,data=DataExpMoyCR,ellipse.type="norm",labelsize=8,geom=c("point"))+ggtitle("")
 #fviz_pca_ind(resacp,col.ind=as.factor(ExpMoykmean$cluster),geom = c("point"),axes=c(1,2))
 
@@ -446,7 +448,7 @@ dist_matrix_ExpMoy <- dist(DataExpMoyCR, method = "euclidean")
 # Clustering hiérarchique avec la méthode de liaison "ward.D2", on peut aussi faire avec "single", "complete","average" ...
 hc_ExpMoy <- hclust(dist_matrix_ExpMoy, method = "ward.D2") 
 # Afficher le dendrogramme
-g3 = fviz_dend(hc_ExpMoy,k=2,show_labels = FALSE,
+g3 = fviz_dend(hc_ExpMoy,k=6,show_labels = FALSE,
 rect = TRUE, rect_fill = TRUE,palette = "npg",
 rect_border = "npg",
 labels_track_height = 0.8)+ggtitle("")
@@ -457,12 +459,17 @@ grid.arrange(g1, g2, g3, nrow=2)
 Faites une classification non supervisée (clustering) des gènes à partir des variables ExpT1, ExpT2 et ExpT3. Comparez avec les résultats de la question précédente.
 
 ```{r echo=F, warning=F, message=F}
+afcm<-MCA(ExpT,quali.sup=3,graph=F)
+coeff<-afcm$ind$coord
+clkmeans<-kmeans(coeff,2,nstart=50)
+#fviz_cluster(clkmeans,data=ExpT,ellipse.type="norm",labelsize=8,geom=c("point"))+ggtitle("")
+
 
 ClustExpT = clara(ExpT, 3, metric = c("euclidean"))
 fviz_cluster(ClustExpT,data=ExpT,ellipse.type="norm",labelsize=8,geom=c("point"))+ggtitle("")
 
 ```
 
-Interprétation
+Interprétation et comparaison avec le graph précédents
 
 
