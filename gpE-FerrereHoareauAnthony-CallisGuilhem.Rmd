@@ -215,6 +215,10 @@ g1 = fviz_eig(ACP_DataBio_reduite,addlabels = TRUE, ylim = c(0, 100), main = "Va
 # Projection des individus
 g2 = fviz_pca_ind(ACP_DataBio_reduite, geom = c("point"),col.ind = "cos2", gradient.cols = c("blue", "red"), repel = TRUE, title = "Projection des individus (Tt_sH_Rr)")
 
+fviz_pca_var(ACP_DataBio_reduite,geom=c("point"),habillage=as.factor(DataBio$ExpT1))
+fviz_pca_var(ACP_DataBio_reduite,geom=c("point"),habillage=as.factor(DataBio$ExpT2))
+fviz_pca_var(ACP_DataBio_reduite,geom=c("point"),habillage=as.factor(DataBio$ExpT3))
+
 grid.arrange(g1, g2, nrow=2)
 
 ```
