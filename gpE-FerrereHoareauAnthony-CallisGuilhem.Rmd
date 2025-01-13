@@ -266,7 +266,7 @@ reskmeanscl<-matrix(0,nrow=nrow(DataBio),ncol=Kmax-1)
 Iintra<-NULL
 for (k in 1:Kmax){
   resaux<-kmeans(DataBioCR,centers=k)
-  reskmeanscl<-resaux$cluster #pourquoi le [,k-1] ?
+  reskmeanscl[,k-1]<-resaux$cluster
   Iintra<-c(Iintra,resaux$tot.withinss) # tot.withinss correspond à la somme des composantes au carré des éléments du cluster par cluster
 }
 
