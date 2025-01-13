@@ -72,10 +72,16 @@ g2 = ggplot(DataBio, aes(x = ExpT2)) + geom_bar(fill = "green")
 g3 = ggplot(DataBio, aes(x = ExpT3)) + geom_bar(fill = "red")
 
 # Pour les variables quantitatives
+auxR1 = melt(DataBio[c(1:18)])
+auxR2 = melt(DataBio[c(19:36)])
 
-boxplot(DataBio[c(1:18)], main = "Expression sous R1", col = "lightblue")
-boxplot(DataBio[c(19:36)], main = "Expression sous R2", col = "lightblue")
-grid.arrange(g1, g2, g3, ncol=3) #<-- Cette Ligne ne marche pas et je ne comprends pas pourquoi.
+#boxplot(DataBio[c(1:18)], main = "Expression sous R1", col = "lightblue")
+#boxplot(DataBio[c(19:36)], main = "Expression sous R2", col = "lightblue")
+
+gR1 = ggplot(data=auxR1, aes(x=variable, y=value))+geom_boxplot()
+gR2 = ggplot(data=auxR2, aes(x=variable, y=value))+geom_boxplot()
+grid.arrange(g1, g2, g3, ncol=3)
+grid.arrange(gR1, gR2, nrow=2)
 ```
 Interprétation des Résultats (analyse uni-dimensionnelle):
 À la suite de cette analyse, plusieurs observations et conclusions peuvent être tirées sur les relations entre les variables : (on rappelle que T3 est une combinaison de T1 et T2, indiqué dans le sujet.)
