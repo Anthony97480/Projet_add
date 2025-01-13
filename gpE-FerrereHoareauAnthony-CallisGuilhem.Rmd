@@ -206,10 +206,10 @@ library(corrplot)
 # A présent, on passe sur l'ACP Centrée. Pour cela, on commence par centrer notre jeu de données.
 #ACP Centrée réduite (Toutes les variables ont la même importance)
 Tt_sH_Rr <- t(DataBio[c(1: 36)])
-DataBioCR <- scale(Tt_sH_Rr, center=TRUE, scale=F)
+DataBioCR <- scale(Tt_sH_Rr, center=F, scale=F)
 
 # On fait la transposée pour avoir : les Tt_sH_Rr décrits par les gènes (J'avour je suis pas sûr à 100% pour ce passage. Sinon on peut enlever la transposée)
-ACP_DataBio_reduite <- PCA(DataBio[c(1:36)],  scale.unit = T, graph = F)
+ACP_DataBio_reduite <- PCA(DataBio[c(1:36)],  scale.unit = F, graph = F)
 ACP_DataBio_reduite$eig
 g1 = fviz_eig(ACP_DataBio_reduite,addlabels = TRUE, ylim = c(0, 100), main = "Valeurs propres")
 # Projection des individus
@@ -362,9 +362,9 @@ mean_sur_T1_6H <- mean(DataExpMoy_full[DataExpMoy_full$ExpT1 == "Sur", "T1_6H"])
 print(mean_sur_T1_6H)
 # On fait la ACP de ce nouveau jeu de données
 
-DataExpMoyCR <- scale(DataExpMoy, center=TRUE, scale=F)
+DataExpMoyCR <- scale(DataExpMoy, center=F, scale=F)
 # On fait la transposée pour avoir : les Tt_sH_Rr décrits par les gènes (J'avour je suis pas sûr à 100% pour ce passage. Sinon on peut enlever la transposée)
-ACP_DataExpMoy_reduite <- PCA(DataExpMoyCR,  scale.unit = T, graph = F)
+ACP_DataExpMoy_reduite <- PCA(DataExpMoyCR,  scale.unit = F, graph = F)
 ACP_DataExpMoy_reduite$eig
 g1 = fviz_eig(ACP_DataExpMoy_reduite,addlabels = TRUE, ylim = c(0, 100), main = "Valeurs propres")
 # Projection des DataExpMoy
