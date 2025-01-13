@@ -30,7 +30,7 @@ DataBio$ExpT3 = as.factor(DataBio$ExpT3)
 if (!require("corrplot")) install.packages("corrplot")
 library(corrplot)
 M_cor = cor(DataBio[1:36])
-corrplot(M_cor, method="ellipse")
+corrplot(M_cor, method="ellipse", tl.cex=0.3)
 #on constate ici, une faible correlation de la part de T1 envers les autre traitement, et que le traitement 1 fonctionne particulièrement mal à la 6ème heure contrairement aux autres.
 ```
 Faites une analyse uni-dimensionnelle et bi-dimensionnelle du jeu de données. Certaines variables sont-elles liées ? Une attention particulière sera portée sur le choix des représentations, et sur l’interprétation
@@ -72,10 +72,10 @@ g2 = ggplot(DataBio, aes(x = ExpT2)) + geom_bar(fill = "green")
 g3 = ggplot(DataBio, aes(x = ExpT3)) + geom_bar(fill = "red")
 
 # Pour les variables quantitatives
+
 boxplot(DataBio[c(1:18)], main = "Expression sous R1", col = "lightblue")
 boxplot(DataBio[c(19:36)], main = "Expression sous R2", col = "lightblue")
-
-grid.arrange(g1, g2, g3, nrow=2) #<-- Cette Ligne ne marche pas et je ne comprends pas pourquoi.
+grid.arrange(g1, g2, g3, ncol=3) #<-- Cette Ligne ne marche pas et je ne comprends pas pourquoi.
 ```
 Interprétation des Résultats (analyse uni-dimensionnelle):
 À la suite de cette analyse, plusieurs observations et conclusions peuvent être tirées sur les relations entre les variables : (on rappelle que T3 est une combinaison de T1 et T2, indiqué dans le sujet.)
