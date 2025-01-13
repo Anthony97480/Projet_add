@@ -459,10 +459,12 @@ grid.arrange(g1, g2, g3, nrow=2)
 Faites une classification non supervisée (clustering) des gènes à partir des variables ExpT1, ExpT2 et ExpT3. Comparez avec les résultats de la question précédente.
 
 ```{r echo=F, warning=F, message=F}
-afcm<-MCA(ExpT,quali.sup=3,graph=F)
-coeff<-afcm$ind$coord
-clkmeans<-kmeans(coeff,2,nstart=50)
-#fviz_cluster(clkmeans,data=ExpT,ellipse.type="norm",labelsize=8,geom=c("point"))+ggtitle("")
+afcm = MCA(ExpT,quali.sup=3,graph=F)
+coeff = afcm$ind$coord
+clkmeans = kmeans(coeff,2,nstart=50)
+clkmeans_melt = melt(clkmeans$cluster)
+ggplot(clkmeans_melt, aes(y=value))+geom_point()
+#fviz_cluster(clkmeans_melt,data=ExpT,ellipse.type="norm",labelsize=8,geom=c("point"))+ggtitle("")
 
 
 ClustExpT = clara(ExpT, 3, metric = c("euclidean"))
