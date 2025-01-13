@@ -507,15 +507,37 @@ Analyse des résultats : ?
 Faites une classification non supervisée (clustering) des gènes à partir des variables ExpT1, ExpT2 et ExpT3. Comparez avec les résultats de la question précédente.
 
 ```{r echo=F, warning=F, message=F}
+set.seed(123)
+
+Kmax<-8
+reskmeanscl<-matrix(0,nrow=nrow(ExpT),ncol=Kmax)
+Iintra<-NULL
+for (k in 1:Kmax){
+  afcm = MCA(ExpT,quali.sup=3,graph=F)
+  coeff = afcm$ind$coord
+  reseaux = kmeans(coeff,k)
+  reskmeanscl[,k]<-resaux$cluster
+  Iintra<-c(Iintra,resaux$tot.withinss) # tot.withinss correspond à la somme des composantes au carré des éléments du cluster par cluster
+}
+
+df<-data.frame(K=1:8,Iintra=Iintra)
+ggplot(df,aes(x=K,y=Iintra))+
+  geom_line()+
+  geom_point()+
+  xlab("Nombre de classes")+
+  ylab("Inertie intraclasse")
+
 afcm = MCA(ExpT,quali.sup=3,graph=F)
+fviz_mca_ind(X = afcm, geom=c("point"), axes=c(1,3), habillage=1)
+
+#-------------------------------------
+
 coeff = afcm$ind$coord
-clkmeans = kmeans(coeff,2,nstart=50)
-clkmeans_melt = melt(clkmeans$cluster)
-ggplot(clkmeans_melt, aes(y=value))+geom_point()
-#fviz_cluster(clkmeans_melt,data=ExpT,ellipse.type="norm",labelsize=8,geom=c("point"))+ggtitle("")
+clkmeans = kmeans(coeff,2)
+fviz_cluster(clkmeans, data=coeff,ellipse.type="norm",labelsize=8,geom=c("point"))+ggtitle("")
 
 
-ClustExpT = clara(ExpT, 3, metric = c("euclidean"))
+ClustExpT = clara(ExpT, 2, metric = c("euclidean"))
 fviz_cluster(ClustExpT,data=ExpT,ellipse.type="norm",labelsize=8,geom=c("point"))+ggtitle("")
 
 ```
