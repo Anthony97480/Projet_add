@@ -240,40 +240,7 @@ if (!require("forcats")) install.packages("forcats")
 if (!require("ggplot2")) install.packages("ggplot2")
 if (!require("corrplot")) install.packages("corrplot")
 if (!require("FactoMineR")) install.packages("FactoMineR")
-if (!require("factoextra")) install.pa```{r,echo=T, error=F,warning=F,message=F}
-
-clust<-paste("DataExpMoy",ExpMoykmeans$cluster,sep="")
-Tab<-melt(table(clust,DataBio[,37])) 
-g1 <- ggplot(Tab,aes(y=value,axis1=clust,axis2=Var2))+
-  geom_alluvium(aes(fill=clust))+
-  geom_stratum(width = 1/12)+   
-  geom_text(stat = "stratum", aes(label = after_stat(stratum)))+
-  scale_x_discrete(limits = c("DataExpMoy", "ExpT1"), expand = c(.05, .05))+
-  theme(legend.position = "none")
-
-clust<-paste("DataExpMoy",ExpMoykmeans$cluster,sep="")
-Tab<-melt(table(clust,DataBio[,38])) 
-g2 <- ggplot(Tab,aes(y=value,axis1=clust,axis2=Var2))+
-  geom_alluvium(aes(fill=clust))+
-  geom_stratum(width = 1/12)+   
-  geom_text(stat = "stratum", aes(label = after_stat(stratum)))+
-  scale_x_discrete(limits = c("DataExpMoy", "ExpT2"), expand = c(.05, .05))+
-  theme(legend.position = "none")
-
-clust<-paste("DataExpMoy",ExpMoykmeans$cluster,sep="")
-Tab<-melt(table(clust,DataBio[,39])) 
-g3 <- ggplot(Tab,aes(y=value,axis1=clust,axis2=Var2))+
-  geom_alluvium(aes(fill=clust))+
-  geom_stratum(width = 1/12)+   
-  geom_text(stat = "stratum", aes(label = after_stat(stratum)))+
-  scale_x_discrete(limits = c("DataExpMoy", "ExpT3"), expand = c(.05, .05))+
-  theme(legend.position = "none")
-
-grid.arrange(g1,g2,g3,ncol=3)
-
-#Alluvial Diagram
-
-```ckages("factoextra")
+if (!require("factoextra")) install.packages("factoextra")
 if (!require("mclust")) install.packages("mclust")
 if (!require("cluster")) install.packages("cluster")
 if (!require("ppclust")) install.packages("ppclust")
@@ -341,6 +308,11 @@ labels_track_height = 0.8)+ggtitle("")
 grid.arrange(g1, g2, g3, nrow=2)
 
 ```
+
+
+
+
+
 
 Interprétation du Clustering :
 En premier lieu, on remarque que nos 2 Clustering (avec méthode K-means et méthode hiérarchique) nous donnent les même résultats, on obtient les mêmes groupes avec le même nombre d'individus pour les 2 clustering.
