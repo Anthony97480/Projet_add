@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 Chargement du jeux de donnée:
  Décrivez l’ensemble du jeu de données en précisant la nature des variables
 
-```{r echo=F}
+```{r echo=F, warning=F,message=F}
 if (!require("ggplot2")) install.packages("ggplot2")
 library("ggplot2")
 DataBio = read.table("DataProjet3MIC-2425.txt", header=TRUE)
@@ -94,7 +94,7 @@ Pour celle-ci j'ai décider afin de bien comprendre les relation qu'il y pourrai
 
 Une première sur les relation entre les expression des gène lors des traitements.
 
-```{r echo=F}
+```{r echo=F, warning=F,message=F}
 #print("T1 & T2")
 #prop.table(table(ExpT$ExpT1, ExpT$ExpT2), margin=2)
 g1 <- ggplot(DataBio, aes(fill=ExpT$ExpT1, x=ExpT$ExpT2))+geom_bar(position="fill")
@@ -112,7 +112,7 @@ grid.arrange(g1, g2, g3, nrow=2)
 Interprétation des résultats:
 On constate ici que les relation entre l'expressions des gène sur le 2ème et 3ème traitement sont très similaire vis à vis du premier traitement. En effet, la grande majorité, si ce n'est la totalité des gène non exprimier des traitement 2 et 3 sont sur exprimer pour le traitement 1 et que les gène sur et sous exprimer des traitement 2 et 3 sont majoritairement non exprimer pour le traitement 1. On peut donc on conclure ici que le traitement 1 est quasiement l'opposé du traitement 2 en terme d'expression de gène et que grace au troisième graphique, le traitement 3 étant une combinaison des 2 autres, est quasiement identique au traitement 2 en terme d'expression des gène sur exprimer et sous exprimer bien qu'on note une différence minime pour les gène non exprimer. Ce qui est cohérent avec les observation de l'analyse uni-dimentionnel de l'expression des gènes.
 
-```{r echo=F}
+```{r echo=F, warning=F,message=F}
 if (!require("BioStatR")) install.packages("BioStatR")
 library(BioStatR)
 T1 <- DataBio[c(1:6, 19:24)]
@@ -189,7 +189,7 @@ De manière générale en dehors du premier traitement peu corréler positivieme
 
 Menez une analyse en composantes principales où les Tt_sH_Rr sont les individus d'écrits par les gènes.
 
-```{r echo=F}
+```{r echo=F, warning=F,message=F}
 #Pour installer les packages
 if (!require("FactoMineR")) install.packages("FactoMineR")
 if (!require("factoextra")) install.packages("factoextra")
@@ -310,7 +310,7 @@ pour commenter vos résultats des questions suivantes.
 
 Menez une analyse en composantes principales pour les gènes à partir du jeu de données DataExpMoy.
 
-```{r echo=F}
+```{r echo=F, warning=F,message=F}
 # A présent,on va essayer de construire la matrice DataExpMoy. C'est une matrice de taille G * 18. Le nombre de lignes correspond aux gènes et les colonnes correspondent aux moyennes de T1,T2,T3 pour chaque heure. On a alors :
 # colonne 1 : moyenne(T1_1H_R1/2)
 # colonne 2 : moyenne(T1_2H_R1/2)
