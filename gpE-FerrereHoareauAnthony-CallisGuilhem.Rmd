@@ -209,7 +209,7 @@ Tt_sH_Rr <- t(DataBio[c(1: 36)])
 DataBioCR <- scale(Tt_sH_Rr, center=F, scale=F)
 
 # On fait la transposée pour avoir : les Tt_sH_Rr décrits par les gènes (J'avour je suis pas sûr à 100% pour ce passage. Sinon on peut enlever la transposée)
-ACP_DataBio_reduite <- PCA(DataBio[c(1:36)],  scale.unit = F, graph = F)
+ACP_DataBio_reduite <- PCA(Tt_sH_Rr,  scale.unit = F, graph = F)
 ACP_DataBio_reduite$eig
 g1 = fviz_eig(ACP_DataBio_reduite,addlabels = TRUE, ylim = c(0, 100), main = "Valeurs propres")
 # Projection des individus
@@ -262,11 +262,11 @@ library(ggalluvial)
 # Avant de débuter le clustering avec la méthode K-means, il faut déterminer le nombre de classes.
 
 Kmax<-20
-reskmeanscl<-matrix(0,nrow=nrow(DataBioCR),ncol=Kmax-1)
+reskmeanscl<-matrix(0,nrow=nrow(DataBioCR),ncol=Kmax)
 Iintra<-NULL
 for (k in 1:Kmax){
   resaux<-kmeans(DataBioCR,centers=k)
-  reskmeanscl[,k-1]<-resaux$cluster
+  reskmeanscl[,k]<-resaux$cluster
   Iintra<-c(Iintra,resaux$tot.withinss) # tot.withinss correspond à la somme des composantes au carré des éléments du cluster par cluster
 }
 
