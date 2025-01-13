@@ -36,7 +36,7 @@ corrplot(M_cor, method="ellipse", tl.cex=0.3)
 Faites une analyse uni-dimensionnelle et bi-dimensionnelle du jeu de données. Certaines variables sont-elles liées ? Une attention particulière sera portée sur le choix des représentations, et sur l’interprétation
 des résultats présentés.
 (Voilà ce que j'ai fais pour l'analyse uni-dimensionnelle. Je vais essayer de tout regrouper dans un seul graphe (je n'y arrive pas pour l'instant mais je vais continuer à essayer))
-```{r echo=F}
+```{r echo=F, warning=F, message=F}
 if (!require("grid")) install.packages("grid")
 library(grid)
 if (!require("gridExtra")) install.packages("gridExtra")
