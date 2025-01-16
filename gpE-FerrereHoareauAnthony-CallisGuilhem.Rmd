@@ -214,12 +214,17 @@ library(corrplot)
 Tt_sH_Rr <- t(DataBio[c(1: 36)])
 DataBioCR <- scale(Tt_sH_Rr, center=F, scale=F)
 
+traitements2 <- rep(c(rep("T1", 6), rep("T2", 6), rep("T3", 6)), 2)
+heures2 <- rep(c(rep("1H", 1), rep("2H", 1), rep("3H", 1),rep("4H", 1), rep("5H", 1), rep("6H", 1)), 6)
+
 # On fait la transposée pour avoir : les Tt_sH_Rr décrits par les gènes (J'avour je suis pas sûr à 100% pour ce passage. Sinon on peut enlever la transposée)
 ACP_DataBio_reduite <- PCA(Tt_sH_Rr,  scale.unit = F, graph = F)
 ACP_DataBio_reduite$eig
 g1 = fviz_eig(ACP_DataBio_reduite,addlabels = TRUE, ylim = c(0, 100), main = "Valeurs propres")
 # Projection des individus
-g2 = fviz_pca_ind(ACP_DataBio_reduite, geom = c("point"),col.ind = "cos2", gradient.cols = c("blue", "red"), repel = TRUE, title = "Projection des individus (Tt_sH_Rr)")
+g2 = fviz_pca_ind(ACP_DataBio_reduite, geom = c("point"),col.ind = "cos2", habillage = as.factor(traitements2), repel = TRUE, title = "Projection des individus (Tt_sH_Rr)")
+
+fviz_pca_ind(ACP_DataBio_reduite, geom = c("point"),col.ind = "cos2", habillage = as.factor(heures2), repel = TRUE, title = "Projection des individus (Tt_sH_Rr)")
 
 fviz_pca_var(ACP_DataBio_reduite,geom=c("point"),habillage=as.factor(DataBio$ExpT1))
 fviz_pca_var(ACP_DataBio_reduite,geom=c("point"),habillage=as.factor(DataBio$ExpT2))
@@ -231,10 +236,12 @@ grid.arrange(g1, g2, nrow=2)
 Interprétation des Résultats : 
 
 En premier lieu, lorsqu'on regarde notre graphe des valeurs propres, on remarque bien que les 2 premières dimensions représentent environ 80% de la variance, ces deux dimensions sont alors suffisantes pour résumer les données.
-Il ne faut pas oublier pour la suite que la dimension 1 (71,1%) a beaucoup plus "d'information" que la dimension 2 (10,5%).
+Il ne faut pas oublier pour la suite que la dimension 1 (70,1%) a beaucoup plus "d'information" que la dimension 2 (10,5%).
 Chaque point sur notre ACP correspond à une colonne Tt_sH_Rr et donc aux variables.
 
-Nous avons pris la décision de ne pas analyser le graphe des variables car trop de gènes pour l'analyser et tirer des conclusions correctes. Il est alors compliqué d'étudier la contribution des gènes. On ne peut pas résumer le nuage de points à l'aide de deux méta-variables dans ce cas précis.
+Ensuite, lorsque l'on observe cette ACP en affectant des couleurs pour chaque traitement, on remarque quelque chose de très intéressant. Une fois de plus, on observe des comportements similaires pour le traitement 2 et le traitement 3.Cela signifie que les ensembles de données associés à ces traitements ont des caractéristiques similaires ou que les données sont distribuées de manière proche dans l'espace des variables considérées. En revanche, le centre d'inertie du traitement 1 semble plus éloigné. Le traitement 1 semble regroupé dans son coin. Lorsqu'on pousse cette analyse sur les heures, on remarque que les heures à l'heure 1 sont tous très proches, peu importe le traitement auquel il appartient. (J'avoue je sais pas trop quoi dire sur l'analyse des heures)
+
+Lorsqu'on analyse le graphe des variables 
 
 Cependant, il reste possible d'étudier la contribution relative des individus. Les individus les plus "intéressants" sont ceux qui sont les plus éloignés de l'individu moyen et ceux dont la contribbution à la dispersion est la plus importante. Ici, on remarque que la variable la plus intéressante est T1_6H_R2.
 Elle est éloignée du centre, indiquant une réponse atypique ou spécifique par rapport aux autres combinaisons traitement-heure-réplicat et sa position dans l’espace principal suggère qu’elle joue un rôle important dans la variation observée dans les données.
