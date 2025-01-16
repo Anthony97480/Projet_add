@@ -517,9 +517,14 @@ grid.arrange(g1,g2,g3,ncol=3)
 #Alluvial Diagram
 
 ```
-Analyse des résultats : ?
+Analyse des résultats : 
 
+Lorsque l'on utilise un diagramme alluvial entre nos clusters et les variables qualitatives ExpT1,ExpT2 et ExpT3. On remarque clairement une connexion et un lien entre ces données. Pour ExpT2 et ExptT3, encore une fois très similaires, on remarque que les clusters ExpMoy3 et ExpMoy6 sont liés avec la valeur "Sur". Ce qui signifie que les gènes appartenant à ces clusters montrent une forte surexpression dans les traitements T2 et T3.
+Ensuite, ExpMoy4 et ExpMoy5 et ExpMoy2 sont liés à "Sous". Ce qui indique que ces gènes sont sous-exprimés dans les traitements T2 et T3 à 6 heures.
+Enfin, ExpMoy2 est lié à "Non", Cela signifie que les traitements 2 et 3 sont inefficaces face à ses gènes.
+Pour ExpT1, la majorité des clusters sont liés à la classe "Non", ce qui signifie que le traitement 1 semble plutôt inefficace. Cependant, on remarque que ExpMoy2 est lié avec "Sur", ce qui montre l'efficacité de ce traitement pour ces gènes.
 
+Cette analyse montre que si l'on arrive à relier un gène à un certain cluster alors on sait qu'elle traitement utiliser pour les gènes soient surexprimés. Si le gène appartient aux clusters ExpMoy3 ou ExpMoy6 alors il est préférable d'utiliser les traitements 2 ou 3. Si le gène appartient au cluster ExpMoy2 alors il est préférable d'utiliser le traitement 1. Si le gène appartient à ExpMoy4, il est préférable d'utiliser le traitement 1 car même si ce cluster est faiblement lié à "Sur", il s'agit du seul traitement qui peut avoir un effet positif ou nul sur le gène. Si le gène appartient au cluster ExpMoy1 ou ExpMoy5, il semble qu'aucun traitement ne puisse surexprimé le gène.
 
 
 Faites une classification non supervisée (clustering) des gènes à partir des variables ExpT1, ExpT2 et ExpT3. Comparez avec les résultats de la question précédente.
