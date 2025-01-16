@@ -1,18 +1,74 @@
 ---
 title: "Projet Analyse de Donnée"
-author: "FERRERE HOAREAU Anthony et CALLIS Guilhem"
+author: "CALLIS Guilhem et FERRERE HOAREAU Anthony"
+institute : "INSA Toulouse"
 date: "`r Sys.Date()`"
 output:
-  pdf_document: default
-  html_document:
-    df_print: paged
+  pdf_document:
+    toc : TRUE
+    toc_depth : 2
+    number_section : TRUE
+    fig_height: 3
+header-includes:
+   - \usepackage{dsfont}
+   - \usepackage{color}
+   - \newcommand{\1}{\mathds{1}}
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message=F, warning=F}
 knitr::opts_chunk$set(echo = TRUE)
+
+if(!require(reticulate)) install.packages("reticulate")
+library(reticulate)
+if (!require("ggplot2")) install.packages("ggplot2")
+library(ggplot2)
+if (!require("corrplot")) install.packages("corrplot")
+library(corrplot)
+if (!require("grid")) install.packages("grid")
+library(grid)
+if (!require("gridExtra")) install.packages("gridExtra")
+library(gridExtra)
+if (!require("lattice")) install.packages("lattice")
+library(lattice)
+if (!require("BioStatR")) install.packages("BioStatR")
+library(BioStatR)
+if (!require("FactoMineR")) install.packages("FactoMineR")
+library(FactoMineR)
+if (!require("factoextra")) install.packages("factoextra")
+library(factoextra)
+if (!require("forcats")) install.packages("forcats")
+library(forcats)
+library(reshape2)
+if (!require("mclust")) install.packages("mclust")
+library(mclust)
+if (!require("cluster")) install.packages("cluster")
+library(cluster)
+if (!require("ppclust")) install.packages("ppclust")
+library(ppclust)
+if (!require("circlize")) install.packages("circlize")
+library(circlize)
+if (!require("ggalluvial")) install.packages("ggalluvial")
+library(ggalluvial)
+if(!require("knitr")) install.package("knitr")
+library(knitr)
 ```
 
-## R Markdown
+\vspace{1cm}
+\newpage
+
+# Introduction
+
+Ce rapport de projet présente les différent aspect de l'analyse que nous avons réaliser sur un jeux de donnée en rapport à une expérimentation de différent traitement sur des plante visant à observer l'évolution de l'expression des gènes chez celle-ci. Pour cela nous avons décidé d'effectuer différente analyse sur ce jeu de donnée de 542 gènes qui nous a été fourni:
+
+- Une analyse uni-dimentionnelle sur chacune des variable du jeu de donnée pour mieux comprendre leur comportement.
+- Une analyse bi-dimentionnelle pour mettre en évidence les liens entre les variables des données.
+- Une analyse en composante principale des varible quantitative du jeu de donnée ainsi qu'une classification non superviser de ces variable, pour ici analyser les traitements.
+- Une analyse en composante principale ainsi qu'une classificationn non superviser mais ici en prenant les gènes comme variable.
+- Une classification non supervisée des gènes à partir ici des variable qualitative "ExpT1", "ExpT2", et "ExpT3".
+
+\newpage
+
+# Description du jeux de donnée
 Chargement du jeux de donnée:
  Décrivez l’ensemble du jeu de données en précisant la nature des variables.
 
@@ -20,35 +76,35 @@ En premier lieu, l'analyse du jeu de données révèle qu'il contient à la fois
 
 Chaque réplicat est subdivisé en trois traitements distincts (T1, T2, T3). Il est important de noter que T3 est une combinaison des traitements T1 et T2, une information essentielle pour les analyses ultérieures. De plus, chaque traitement est décomposé en six heures d’observation, allant de 1 heure à 6 heures. Ainsi, chaque colonne des variables quantitatives peut être désignée par la notation Tt_sH_Rr, où t représente le traitement, s l’heure, et r le réplicat.
 
-Les variables qualitatives, quant à elles, sont contenues dans les colonnes 37 à 39. Ces colonnes (ExpT1, ExpT2 et ExpT3) indiquent les états "Sur", "Sous" ou "Non".
+Les variables qualitatives, quant à elles, sont contenues dans les colonnes 37 à 39. Ces colonnes (ExpT1, ExpT2 et ExpT3) indiquent les états "Sur", "Sous" ou "Non" de l'expression des gènes des différent traitement au boud de 6 heures.
+
 
 ```{r echo=F, warning=F,message=F}
-if (!require("ggplot2")) install.packages("ggplot2")
-library("ggplot2")
 DataBio = read.table("DataProjet3MIC-2425.txt", header=TRUE)
 #affichage de la nature des variable du jeu de donnée
+print("Table de la nature des différente variable du jeu de donnée")
 str(DataBio)
 #mise en place des donnée qualitative
 DataBio$ExpT1 = as.factor(DataBio$ExpT1)
 DataBio$ExpT2 = as.factor(DataBio$ExpT2)
 DataBio$ExpT3 = as.factor(DataBio$ExpT3)
-#print(summary(DataBio))
-if (!require("corrplot")) install.packages("corrplot")
-library(corrplot)
-M_cor = cor(DataBio[1:36])
-corrplot(M_cor, method="ellipse", tl.cex=0.3)
-#on constate ici, une faible correlation de la part de T1 envers les autre traitement, et que le traitement 1 fonctionne particulièrement mal à la 6ème heure contrairement aux autres.
 ```
-Faites une analyse uni-dimensionnelle et bi-dimensionnelle du jeu de données. Certaines variables sont-elles liées ? Une attention particulière sera portée sur le choix des représentations, et sur l’interprétation
-des résultats présentés.
-(Voilà ce que j'ai fais pour l'analyse uni-dimensionnelle. Je vais essayer de tout regrouper dans un seul graphe (je n'y arrive pas pour l'instant mais je vais continuer à essayer))
+
+
+```{r corrDataBio, echo=F, fig.cap="\\label{fig:corrDataBio}Matrice des corrélations entre les variables quantitatives (les Tt_sH_Rr)"}
+M_cor = cor(DataBio[1:36])
+corrplot(M_cor, method="ellipse", tl.cex=0.4)
+```
+
+
+On peut constater sur `la figure` \ref{fig:corrDataBio}, que dans notre jeu de donnée, les traitement 2 et 3 quelque soit leur réplicat sont fortement correler entre eux contrairement au traitement 1 ou plus particulièrement on constate qu'à la 6ème pour le réplicat 2 une correlation négative avec les autres variable montrant un comportement différent du traitement 1 part rapport au deux autre. Et nous permettant également de poser l'hypothèse que le traitement 3 (pour rappel étant une combinaison des deux autres traitement) serait majoritairement dépendant du comportement et enjendredrait des variation génétique fortement similaire à celui du traitement 2.
+
+# Analyse dimentionnelle du jeu de donnée
+
+## Analyse uni-dimensionnelle
+
+
 ```{r echo=F, warning=F, message=F}
-if (!require("grid")) install.packages("grid")
-library(grid)
-if (!require("gridExtra")) install.packages("gridExtra")
-library(gridExtra)
-if (!require("lattice")) install.packages("lattice")
-library(lattice)
 
 # Faire une Analyse Unidimensionnelle du jeu de données.
 # On commence par l'analyse des variables Qualitatives
@@ -72,41 +128,46 @@ freqT3<-data.frame(effT3=c(effT3),Freq=c(effT3)/sum(effT3))
 #print(freqT2)
 #print(freqT3)
 
+auxR1 = melt(DataBio[c(1:18)])
+auxR2 = melt(DataBio[c(19:36)])
+```
+
+
+```{r ExpTBar, echo=F, fig.cap="\\label{fig:ExpTBar}Représentation de la quantité respective de gène non, sur et sous exprimer pour pour les traitement 1, 2 et 3 à 6 heure"}
 # GGplot des variables qualitatives (Exp T1,T2,T3)
 g1 = ggplot(DataBio, aes(x = ExpT1)) + geom_bar(fill = "blue")
 g2 = ggplot(DataBio, aes(x = ExpT2)) + geom_bar(fill = "green")
 g3 = ggplot(DataBio, aes(x = ExpT3)) + geom_bar(fill = "red")
-
-# Pour les variables quantitatives
-auxR1 = melt(DataBio[c(1:18)])
-auxR2 = melt(DataBio[c(19:36)])
-
-#boxplot(DataBio[c(1:18)], main = "Expression sous R1", col = "lightblue")
-#boxplot(DataBio[c(19:36)], main = "Expression sous R2", col = "lightblue")
-
-gR1 = ggplot(data=auxR1, aes(x=variable, y=value))+geom_boxplot()
-gR2 = ggplot(data=auxR2, aes(x=variable, y=value))+geom_boxplot()
 grid.arrange(g1, g2, g3, ncol=3)
+```
+
+
+```{r BoxDataBio, echo=F, fig.cap="\\label{fig:BoxDataBio}Représentation de la dispersion des valeurs pour chaque variable", fig.height=5}
+# Pour les variables quantitatives
+gR1 = ggplot(data=auxR1, aes(x=variable, y=value))+geom_boxplot()+ggtitle("Représentation en boxplot des traitement pour le réplicat 1")
+gR2 = ggplot(data=auxR2, aes(x=variable, y=value))+geom_boxplot()+ggtitle("Représentation en boxplot des traitement pour le réplicat 2")
 grid.arrange(gR1, gR2, nrow=2)
 ```
-Interprétation des Résultats (analyse uni-dimensionnelle):
+
+
 À la suite de cette analyse, plusieurs observations et conclusions peuvent être tirées sur les relations entre les variables : (on rappelle que T3 est une combinaison de T1 et T2, indiqué dans le sujet.)
-En ce qui concerne l'analyse Uni-dimensionnelle sur les variables qualitatives, les fréquences des gènes classés comme surexprimés, sous-exprimés et non exprimés sont globalement similaires pour ExpT2 et ExpT3. Cela peut s'expliquer par le fait que T3 est une combinaison de T1 et T2, ce qui entraîne des distributions proches.
+En ce qui concerne l'analyse Uni-dimensionnelle sur les variables qualitatives, on constate sur `la figure` \ref{fig:ExpTBar} que les fréquences des gènes classés comme surexprimés, sous-exprimés et non exprimés sont globalement similaires pour ExpT2 et ExpT3. Cela peut s'expliquer par le fait que T3 est une combinaison de T1 et T2, ce qui entraîne des distributions proches.
 En revanche, ExpT1 se distingue clairement des deux autres, la majorité des gènes dans ExpT1 sont non exprimés, ce qui contraste avec les répartitions plus équilibrées observées pour ExpT2 et ExpT3. Cette observation suggère que le traitement T1 induit très peu de changements dans l'expression des gènes en réponse à un traitement.
 
 Pour les variables quantitatives, on remarque plusieurs choses.
-Premièrement, on remarque que les distributions des valeurs d’expression pour R1 et R2 sont remarquablement similaires. Cela indique une bonne reproductibilité biologique entre les réplicats.
+En effet, sur `la figure` \ref{fig:BoxDataBio}, on remarque que les distributions des valeurs d’expression pour R1 et R2 sont remarquablement similaires. Cela indique une bonne reproductibilité biologique entre les réplicats.
 La cohérence entre R1 et R2 valide la qualité des données et leur fiabilité pour les analyses ultérieures. Pour les traitements, T2 et T3 sont fortement liés, leurs médianes, leurs intervalles interquartiles sont très similaires.
 Cela renforce l’idée que T3, étant une combinaison de T1 et T2, hérite principalement des caractéristiques de T2. Cependant, les colonnes T2_1H_R1/R2 et T3_1H_R1/R2 présentent un grand nombre de valeurs aberrantes (outliers), ce qui peut indiquer des réponses génétiques atypiques à 1 heure pour ces traitements.
 Les intervalles interquartiles pour T1 sont beaucoup plus petits, suggérant que les données pour ce traitement sont plus concentrées autour de la médiane. 
 Toutefois, T1 présente également de nombreux outliers, en plus grand nombre que pour T2 ou T3, ce qui peut indiquer des comportements génétiques spécifiques ou une variabilité accrue pour certains gènes sous ce traitement.
 
-A présent, passons à l'analyse Bi-dimensionnelle.
-Pour celle-ci j'ai décider afin de bien comprendre les relation qu'il y pourrait y avoir entre les variable, d'en faire 3.
 
-Une première sur les relation entre les expression des gène lors des traitements.
+## Analyse Bi-dimensionnelle
+Pour celle-ci nous décider, afin de bien comprendre les relation qu'il y pourrait y avoir entre les variable, d'en faire 3.
 
-```{r echo=F, warning=F,message=F}
+### Analyse sur les variable qualitative
+
+```{r RelationExpT, echo=F, fig.cap="\\label{fig:RelationExpT}Comparaison entre l'expression des gène des traitement deux à deux à 6 heure", fig.width=10}
 #print("T1 & T2")
 #prop.table(table(ExpT$ExpT1, ExpT$ExpT2), margin=2)
 g1 <- ggplot(DataBio, aes(fill=ExpT$ExpT1, x=ExpT$ExpT2))+geom_bar(position="fill")
@@ -121,12 +182,13 @@ g3 <- ggplot(DataBio, aes(x=ExpT$ExpT3, fill=ExpT$ExpT2))+geom_bar(position="fil
 
 grid.arrange(g1, g2, g3, ncol=3)
 ```
-Interprétation des résultats:
-On constate ici que les relation entre l'expressions des gène sur le 2ème et 3ème traitement sont très similaire vis à vis du premier traitement. En effet, la grande majorité, si ce n'est la totalité des gène non exprimier des traitement 2 et 3 sont sur exprimer pour le traitement 1 et que les gène sur et sous exprimer des traitement 2 et 3 sont majoritairement non exprimer pour le traitement 1. On peut donc on conclure ici que le traitement 1 est quasiement l'opposé du traitement 2 en terme d'expression de gène et que grace au troisième graphique, le traitement 3 étant une combinaison des 2 autres, est quasiement identique au traitement 2 en terme d'expression des gène sur exprimer et sous exprimer bien qu'on note une différence minime pour les gène non exprimer. Ce qui est cohérent avec les observation de l'analyse uni-dimentionnel de l'expression des gènes.
+
+
+On constate sur `la figure` \ref{fig:RelationExpT} que les relation entre l'expressions des gène sur le 2ème et 3ème traitement sont très similaire vis à vis du premier traitement. En effet, la grande majorité, si ce n'est la totalité des gène non exprimier des traitement 2 et 3 sont sur exprimer pour le traitement 1 et que les gène sur et sous exprimer des traitement 2 et 3 sont majoritairement non exprimer pour le traitement 1. On peut donc on conclure ici que le traitement 1 est quasiement l'opposé du traitement 2 en terme d'expression de gène et que grace au troisième graphique, le traitement 3 étant une combinaison des 2 autres, est quasiement identique au traitement 2 en terme d'expression des gène sur exprimer et sous exprimer bien qu'on note une différence minime pour les gène non exprimer. Ce qui est cohérent avec les observation de l'analyse uni-dimentionnel de l'expression des gènes.
+
+### Analyse sur les variable qualitative et quantitative
 
 ```{r echo=F, warning=F,message=F}
-if (!require("BioStatR")) install.packages("BioStatR")
-library(BioStatR)
 T1 <- DataBio[c(1:6, 19:24)]
 T2 <- DataBio[c(7:12, 25:30)]
 T3 <- DataBio[c(13:18, 31:36)]
@@ -166,7 +228,10 @@ Lt3_expt3 = data.frame(Lt3_expt3)
 Lt1_expt1[,2] = as.factor(Lt1_expt1[,2])
 Lt2_expt2[,2] = as.factor(Lt2_expt2[,2])
 Lt3_expt3[,2] = as.factor(Lt3_expt3[,2])
+```
 
+
+```{r degLExpT, echo=F, fig.cap="\\label{fig:degLExpT}Degré de liaison entre l'expression des gènes obtenu dans le jeu de donnée à 6 heure et l'évolution de cette expression au court du temps lors des testes", fig.height=5}
 g1 = ggplot(Lt1_expt1, aes(x=Heure, y=Liaison_T1ExpT1, colour=Replicat))+geom_line()
 g2 = ggplot(Lt2_expt2, aes(x=Heure, y=Liaison_T2ExpT2, colour=Replicat))+geom_line()
 g3 = ggplot(Lt3_expt3, aes(x=Heure, y=Liaison_T3ExpT3, colour=Replicat))+geom_line()
@@ -174,41 +239,59 @@ g3 = ggplot(Lt3_expt3, aes(x=Heure, y=Liaison_T3ExpT3, colour=Replicat))+geom_li
 grid.arrange(g1, g2, g3, nrow=2)
 ```
 
-#Peut être faire la même analyse mais avec T1 et les gène de T2 (je l'ai regarder mais pas mis en graph j'attend ton avis)#
-Montre le fait que T1 bien que éloigné en terme de fonctionnement et de comportement comparé aux deux autres, à tendence au bout de 4h à se rapprocher de l'expression des gène de T2 à auteur de 40% avant de s'éloigné à nouveau (induisant un comportement différent à long terme mais des réaction à peu près similaire des gène des plante à cours terme.)
 
-
-
-#analyse de de chaque traitement avec leur gènes#
-Cette analyse-ci nous montre différent graphique sur l'évolution des degré de liaison entre les traitement et l'expression de leur gène au cours du temps.
+Cette analyse-ci nous montre, sur `la figure` \ref{fig:degLExpT} différents graphiques sur l'évolution des degré de liaison entre les traitements et l'expression de leur gène au cours du temps.
 Ce degré de liaison ici reflète la prximoté entre l'évolution de l'expression des gènes considérer au fils du temps lors du traitement et l'expression de ces même gène au bout de 6h.
 On constate pour le premier traitement que malgré une évolution croissante du degré de liaison celui-ci très variant en fonction du temps que cela soit pour le premier ou le second réplicat avec des diminution à 2h, 3h et 5h. De plus ce degré à un maximum de 0.56 pour le premier réplicat et 0.46 pour le deuxième réplicat. Indicant une forte évolution au cours du temps des gène de la plante lors du traitement ainsi que ce traitement est plus long à agir que les deux autres puisque n'étant semblable qu'à 50% au résultat final attendu pour ce traitement au bout de 6h.
 Les deux autres traitement quant à eux, ayant de forte similarité comme constaté précédement, ont une courbe d'évolution du degré de liaison très similaire, on peut donc en conclure que ces deux traitement agisse dans un même temps et bien plus rapidement que le premier traitement avec beaucoup moins de variation des l'expression des gène au cours du temps, puisque les courbe étant des courbe logarithmique, on constate qu'il à de fort changement dans l'expression des gênes au départ mais que ces changement diminute en fonction du temps.
-On peut donc en déduire que contrairement au premier traitement qui lui est fortement actif sur la plante tout au long de l'expérience malgré une forte présence de gène non actif, et prend beaucoup de temps à agir, les deux autres traitement quant à eux, sont principalement actif sur la plante au début de l'expérience et leur influence et a variation de l'expression des gène diminute avec le temps ils sont donc en comparaison au résultat mesuré à 6h bien plus rapide et efficace que le traitement 1. Ce qui est cohérent avec les observation réaliser jusqu'à présents.
-```{r}
+On peut donc en déduire que contrairement au premier traitement qui lui est fortement actif sur la plante tout au long de l'expérience malgré une forte présence de gène non actif, et prend beaucoup de temps à agir, les deux autres traitement quant à eux, sont principalement actif sur la plante au début de l'expérience et leur influence et a variation de l'expression des gène diminute avec le temps ils sont donc en comparaison au résultat mesuré à 6h bien plus rapide et efficace que le traitement 1.
+
+### Analyse sur les variable quantitatives
+
+Pour cette analyse, nous avons décidé de représenté de nouveau la matrice de correlation de la première partie mais en réalisant un zoom sur les différent traitement.
+
+```{r echo=F}
 corT1T2 = cor(T1, T2)
 corT1T3 = cor(T1, T3)
 corT2T3 = cor(T2, T3)
 
-g1 = corrplot(corr = corT1T2, method="ellipse")
-g2 = corrplot(corr = corT1T3, method="ellipse")
-g3 = corrplot(corr = corT2T3, method="ellipse")
 ```
-Ici en comparant l'expression des gène au cours du temps des différent des traitement, on remarque que le traitement 1 est très peu corrélé avec le traitement 2 voir même corrélé négativement pour ce qui est de la 6ème heure du réplicat 2, un même constat que l'on peu faire vis à vis du traitement 3 (bien que moins visible, puisqu'étant une combinaison du traitement 1 et 2), appuuyant sur le fait que le traitement 1 se comporte différemment des deux autres. Les traitement T2 et T3 quant à eux sont similaire dans leur variation, en effet ils sont très corrélé positivement quelque soit l'heure à laquel on a réaliser les mesure, ils se comporte donc de la même manière et sont semblable en terme d'évolution de l'expression des gènes, confirmant le fait que le traitement T3 hérite principalement des caractéristique du traitement T2
+
+
+```{r corrT12, echo=F, fig.cap="\\label{fig:corrT12}Correlation entre les variable du traitement 1 et du traitement 2 pour les deux réplicat"}
+g1 = corrplot(corr = corT1T2, method="ellipse")
+
+```
+
+
+```{r corrT13, echo=F, fig.cap="\\label{fig:corrT13}Correlation entre les variable du traitement 1 et du traitement 3 pour les deux réplicat"}
+g2 = corrplot(corr = corT1T3, method="ellipse")
+
+```
+
+
+```{r corrT23, echo=F, fig.cap="\\label{fig:corrT23}Correlation entre les variable du traitement 2 et du traitement 3 pour les deux réplicat"}
+g3 = corrplot(corr = corT2T3, method="ellipse")
+
+```
+
+
+Ici en comparant l'expression des gène au cours du temps des différent des traitement, on remarque sur `la figure` \ref{fig:corrT12} que le traitement 1 est très peu corrélé avec le traitement 2 voir même correlé négativement pour ce qui est de la 6ème heure du réplicat 2, un même constat que l'on peu faire vis à vis du traitement 3 visible sur `la figure` \ref{fig:corrT13} (bien que moins visible, puisqu'étant une combinaison du traitement 1 et 2 et donc étant plus ou moins fortement correlé au traitement 3 selon les heures), appuuyant sur le fait que le traitement 1 se comporte différemment des deux autres. Les traitement T2 et T3 quant à eux sont similaire dans leur variation.
+
+En effet, sur `la figure` \ref{fig:corrT23} ceux deux traitements sont très correlé positivement quelque soit l'heure à laquel on a réaliser les mesure, ils se comporte donc de la même manière et sont semblable en terme d'évolution de l'expression des gènes, confirmant le fait que le traitement T3 hérite principalement des caractéristique du traitement T2
 
 De manière générale en dehors du premier traitement peu corréler positiviement voir négatiment à certainte heures des deux autres, les variables sont fortement corrélées positivement, ce qui implique qu'une forte réduction des dimensions est attendue pour l'ACP.
- 
 
-Menez une analyse en composantes principales où les Tt_sH_Rr sont les individus d'écrits par les gènes.
-Justifier pourquoi il ne faut pas centrer / réduire : Ici, les variables sont dèjà homogènes, elles ont des échelles similaires et il n'est pas nécessaire de centrer/réduire. Dans ce cas, les données sont déjà comparables sans manipulation supplémentaire. De plus, La centrage/réduction pourrait artificiellement altérer les relations naturelles entre les variables.
-```{r echo=F, warning=F,message=F}
-#Pour installer les packages
-if (!require("FactoMineR")) install.packages("FactoMineR")
-if (!require("factoextra")) install.packages("factoextra")
-if (!require("corrplot")) install.packages("corrplot")
-library(FactoMineR)
-library(factoextra)
-library(corrplot)
+\newpage
+
+
+# Analyse des Tt_sH_Rr
+
+## Analyse en composante principales
+
+Ici, les variables de notre jeu de donnée sont dèjà homogènes, elles ont des échelles similaires et il n'est pas nécessaire de centrer/réduire. Dans ce cas, les données sont déjà comparables sans manipulation supplémentaire. De plus, La centrage/réduction pourrait artificiellement altérer les relations naturelles entre les variables.
+
+```{r echo=F, warning=F, message=F}
 # A présent, on passe sur l'ACP Centrée. Pour cela, on commence par centrer notre jeu de données.
 #ACP Centrée réduite (Toutes les variables ont la même importance)
 Tt_sH_Rr <- t(DataBio[c(1: 36)])
@@ -219,63 +302,52 @@ heures2 <- rep(c(rep("1H", 1), rep("2H", 1), rep("3H", 1),rep("4H", 1), rep("5H"
 
 # On fait la transposée pour avoir : les Tt_sH_Rr décrits par les gènes (J'avour je suis pas sûr à 100% pour ce passage. Sinon on peut enlever la transposée)
 ACP_DataBio_reduite <- PCA(Tt_sH_Rr,  scale.unit = F, graph = F)
-ACP_DataBio_reduite$eig
+
+
+#ACP_DataBio_reduite$eig
+
+
 g1 = fviz_eig(ACP_DataBio_reduite,addlabels = TRUE, ylim = c(0, 100), main = "Valeurs propres")
 # Projection des individus
 g2 = fviz_pca_ind(ACP_DataBio_reduite, geom = c("point"),col.ind = "cos2", habillage = as.factor(traitements2), repel = TRUE, title = "Projection des individus (Tt_sH_Rr)")
 
-fviz_pca_ind(ACP_DataBio_reduite, geom = c("point"),col.ind = "cos2", habillage = as.factor(heures2), repel = TRUE, title = "Projection des individus (Tt_sH_Rr)")
+g3 = fviz_pca_ind(ACP_DataBio_reduite, geom = c("point"),col.ind = "cos2", habillage = as.factor(heures2), repel = TRUE, title = "Projection des individus (Tt_sH_Rr)")
 
-fviz_pca_var(ACP_DataBio_reduite,geom=c("point"),habillage=as.factor(DataBio$ExpT1))
-fviz_pca_var(ACP_DataBio_reduite,geom=c("point"),habillage=as.factor(DataBio$ExpT2))
-fviz_pca_var(ACP_DataBio_reduite,geom=c("point"),habillage=as.factor(DataBio$ExpT3))
-
-grid.arrange(g1, g2, nrow=2)
+g4 = fviz_pca_var(ACP_DataBio_reduite,geom=c("point"),habillage=as.factor(DataBio$ExpT1))
+g5 = fviz_pca_var(ACP_DataBio_reduite,geom=c("point"),habillage=as.factor(DataBio$ExpT2))
+g6 = fviz_pca_var(ACP_DataBio_reduite,geom=c("point"),habillage=as.factor(DataBio$ExpT3))
 
 ```
-Interprétation des Résultats : 
 
-En premier lieu, lorsqu'on regarde notre graphe des valeurs propres, on remarque bien que les 2 premières dimensions représentent environ 80% de la variance, ces deux dimensions sont alors suffisantes pour résumer les données.
+
+```{r ACPDataBio, echo=F, fig.cap="\\label{fig:ACPDataBioI}Représentation de l'ACP des Tt_sH_Rr regroupé selon les heures et selon les traitement", fig.height=5}
+grid.arrange(g1, g2, g3, nrow=2)
+```
+
+
+```{r ACPDataBioV, echo=F, fig.cap="\\label{fig:ACPDataBioV}Représentation de l'ACP variable regroupé selon l'expression de leur gènes pour les traitement 1, 2 et 3 respectivement", fig.height=5}
+grid.arrange(g4, g5, g6, nrow=2)
+
+```
+
+
+En premier lieu, lorsqu'on regarde notre graphe des valeurs propres sur `la figure` \ref{fig:ACPDataBioI}, on remarque bien que les 2 premières dimensions représentent environ 80% de la variance, ces deux dimensions sont alors suffisantes pour résumer les données.
 Il ne faut pas oublier pour la suite que la dimension 1 (70,1%) a beaucoup plus "d'information" que la dimension 2 (10,5%).
 Chaque point sur notre ACP correspond à une colonne Tt_sH_Rr et donc aux variables.
 
-Ensuite, lorsque l'on observe cette ACP en affectant des couleurs pour chaque traitement, on remarque quelque chose de très intéressant. Une fois de plus, on observe des comportements similaires pour le traitement 2 et le traitement 3.Cela signifie que les ensembles de données associés à ces traitements ont des caractéristiques similaires ou que les données sont distribuées de manière proche dans l'espace des variables considérées. En revanche, le centre d'inertie du traitement 1 semble plus éloigné. Le traitement 1 semble regroupé dans son coin. Lorsqu'on pousse cette analyse sur les heures, on remarque que les heures à l'heure 1 sont tous très proches, peu importe le traitement auquel il appartient. (J'avoue je sais pas trop quoi dire sur l'analyse des heures). Par ailleurs, nous avons éffectue une ACP en groupant les points par réplicats et encore une fois, on trouve que les deux réplicats sont cohérents car leurs centres d'inerties sont proches.
+Ensuite, lorsque l'on observe cette ACP toujours sur `la figure` \ref{fig:ACPDataBioI} en affectant des couleurs pour chaque traitement, on remarque quelque chose de très intéressant. Une fois de plus, on observe des comportements similaires pour le traitement 2 et le traitement 3.Cela signifie que les ensembles de données associés à ces traitements ont des caractéristiques similaires ou que les données sont distribuées de manière proche dans l'espace des variables considérées. En revanche, le centre d'inertie du traitement 1 semble plus éloigné. Le traitement 1 semble regroupé dans son coin. Lorsqu'on pousse cette analyse sur les heures, on remarque que les heures à l'heure 1 sont tous très proches, peu importe le traitement auquel il appartient et que ces données ce comportent toute comme le traitement 1 au départ (si l'on compare les deux graphique). Par ailleurs, nous avons éffectue une ACP en groupant les points par réplicats et encore une fois, on trouve que les deux réplicats sont cohérents car leurs centres d'inerties sont proches.
 
-Lorsqu'on analyse le graphe des variables, les conclusions sont les mêmes que dans la partie uni-dimensionnelle concernant la répartition des "Non", "Sous", "Sur" pour les traitements. On remarque que les gènes semblent plutôt bien répartis. On peut en déduire que centrer/résuire les variables n'était donc pas nécessaire.
+Lorsqu'on analyse le graphe des variables sur `la figure` \ref{fig:ACPDataBioV}, les conclusions sont les mêmes que dans la partie uni-dimensionnelle concernant la répartition des "Non", "Sous", "Sur" pour les traitements. On remarque que les gènes semblent plutôt bien répartis. On peut en déduire que centrer/résuire les variables n'était donc pas nécessaire.
 
 Cependant, il reste possible d'étudier la contribution relative des individus. Les individus les plus "intéressants" sont ceux qui sont les plus éloignés de l'individu moyen et ceux dont la contribbution à la dispersion est la plus importante. Ici, on remarque que la variable la plus intéressante est T1_6H_R2.
 Elle est éloignée du centre, indiquant une réponse atypique ou spécifique par rapport aux autres combinaisons traitement-heure-réplicat et sa position dans l’espace principal suggère qu’elle joue un rôle important dans la variation observée dans les données.
 
-Faites une classification non supervisée (clustering) de ces données afin de regrouper les Tt sH Rr.
-en plusieurs classes homog`enes.
-```{r,echo=T, error=F,warning=F,message=F}
-if (!require("forcats")) install.packages("forcats")
-if (!require("ggplot2")) install.packages("ggplot2")
-if (!require("corrplot")) install.packages("corrplot")
-if (!require("FactoMineR")) install.packages("FactoMineR")
-if (!require("factoextra")) install.packages("factoextra")
-if (!require("mclust")) install.packages("mclust")
-if (!require("cluster")) install.packages("cluster")
-if (!require("ppclust")) install.packages("ppclust")
-if (!require("circlize")) install.packages("circlize")
-if (!require("ggalluvial")) install.packages("ggalluvial")
-library(forcats)
-library(ggplot2)
-library(corrplot)
-library(reshape2)
 
-library(FactoMineR)
-library(factoextra)
+## Classification non supervisée (Clustering)
 
-library(mclust)
-library(cluster)
-library(ppclust)
 
-library(circlize)
-library(ggalluvial)
-
+```{r echo=F, error=F,warning=F,message=F}
 # Maintenant que l'ACP a été effectuée, on fait un clustering des classes à l'aide de la méthode K-means.
-
 # Avant de débuter le clustering avec la méthode K-means, il faut déterminer le nombre de classes.
 
 set.seed(123)
@@ -316,25 +388,27 @@ rect = TRUE, rect_fill = TRUE,palette = "npg",
 rect_border = "npg",
 labels_track_height = 0.8)+ggtitle("")
 
-# (Le temps de chargement est plutôt long, C'est NORMAL)
+```
 
+
+```{r clustT_H_R, echo=F, fig.cap="\\label{fig:clustT_H_R}Représentation en cluster homogène de 3 classe sur les Tt_sH_Rr", fig.height=5}
 grid.arrange(g1, g2, g3, nrow=2)
 
 ```
 
-Interprétation du Clustering :
-En premier lieu, on remarque que nos 3 Clustering (avec méthode K-means et méthode hiérarchique) nous donnent les même résultats, on obtient les mêmes groupes avec le même nombre d'individus pour les 3 clustering.
+
+`La figure` \ref{fig:clustT_H_R} En premier lieu, on remarque que nos Clustering (avec méthode K-means et méthode hiérarchique) nous donnent les même résultats, on obtient les mêmes groupes avec le même nombre d'individus pour les 3 cluster formé.
 Dans le cadre du clustering avec la méthode des K-means, on observe que les clusters sont bien distincts, ce qui indique que les groupes d'individus présentent des différences marquées. Ce résultat de clustering n'est d'ailleurs pas surprenant : lorsqu'on le compare à l'ACP basée sur le classement par traitements, on constate qu'une des classes était prévisible. Je parle de la classe "bleue" (située à gauche), qui est composée presque exclusivement du traitement 1. Les seuls points supplémentaires dans cette classe, sont au nombre de 4, et correspondent aux traitements 2 et 3 à l’heure 1 pour les deux réplicats.
 
 En ce qui concerne les deux autres classes, elles apparaissent comme des "fusions" des traitements 2 et 3, suggérant une proximité ou une similarité entre ces deux traitements dans les dimensions considérées.
 
-Préliminairement, construisez un jeu de données DataExpMoy contenant la moyenne des expressions sur les réplicats de chaque g`ene, pour chaque traitement et chaque heure. DataExpMoy est
-donc une matrice de taille G × 18. Vous pourrez utiliser les variables ExpT1, ExpT2 et ExpT3
-pour commenter vos résultats des questions suivantes.
+\newpage
 
+# Analyse de DataExpMoy et de ExpT
 
+## Analyse en composantes principales de DataExpMoy
 
-Menez une analyse en composantes principales pour les gènes à partir du jeu de données DataExpMoy.
+Pour la suite de l'analyse nous allons construire une matrice correspondant à la moyenne des données des expression des gènes pour chaque heure *DataExpMoy*
 
 ```{r echo=F, warning=F,message=F}
 # A présent,on va essayer de construire la matrice DataExpMoy. C'est une matrice de taille G * 18. Le nombre de lignes correspond aux gènes et les colonnes correspondent aux moyennes de T1,T2,T3 pour chaque heure. On a alors :
@@ -371,7 +445,7 @@ MatriceDataExpMoy <- cbind(T1_means, T2_means, T3_means)
 DataExpMoy <- as.data.frame(cbind(T1_means, T2_means, T3_means))
 
 # Pour vérifier la taille
-dim(DataExpMoy)  # Devrait être 542 × 18 (c'est bon)
+#dim(DataExpMoy)  # Devrait être 542 × 18 (c'est bon)
 
 # On utilise T1 /T2 /T3 pour Identifier les gènes particulièrement influents pour un traitement spécifique.
 # Ajouter les colonnes ExpT1, ExpT2, ExpT3 pour un filtrage
@@ -379,7 +453,7 @@ DataExpMoy_full <- cbind(MatriceDataExpMoy, ExpT1 = DataBio$ExpT1, ExpT2 = DataB
 
 # Moyenne des gènes surexprimés pour T1 à 6 heures
 mean_sur_T1_6H <- mean(DataExpMoy_full[DataExpMoy_full$ExpT1 == "Sur", "T1_6H"])
-print(mean_sur_T1_6H)
+#print(mean_sur_T1_6H)
 # On fait la ACP de ce nouveau jeu de données
 
 DataExpMoyCR <- scale(DataExpMoy, center=F, scale=F)
@@ -390,8 +464,17 @@ g1 = fviz_eig(ACP_DataExpMoy_reduite,addlabels = TRUE, ylim = c(0, 100), main = 
 # Projection des DataExpMoy
 g2 = fviz_pca_ind(ACP_DataExpMoy_reduite, geom = c("point"),col.ind = "cos2", gradient.cols = c("blue", "red"), repel = TRUE, title = "Projection des DataExpMoy")
 
+
+```
+
+
+```{r ACP_DEM, echo=F, fig.cap="\\label{fig:ACP_DEM}ACP de DataExpMoy", fig.height=8}
 grid.arrange(g1, g2, nrow=2)
 
+```
+
+
+```{r ProjVar, echo=F, fig.cap="\\label{fig:ProjVar}Projection des variable de l'ACP dans les dimension 1 et 2", fig.height=4}
 # Projection des variables
 fviz_pca_var(ACP_DataExpMoy_reduite, col.var = "contrib", 
              gradient.cols = c("blue", "red"), repel = TRUE,
@@ -399,47 +482,26 @@ fviz_pca_var(ACP_DataExpMoy_reduite, col.var = "contrib",
 
 ```
 
-Interprétation des Résultats : 
 
-En premier lieu, lorsqu'on regarde notre graphe des valeurs propres, on remarque bien que les 2 premières dimensions représentent environ 81-82% de la variance, ces deux dimensions sont alors suffisantes pour résumer les données.
+En premier lieu, lorsqu'on regarde notre graphe des valeurs propres sur `la figure` \ref{fig:ACP_DEM}, on remarque bien que les 2 premières dimensions représentent environ 81-82% de la variance, ces deux dimensions sont alors suffisantes pour résumer les données.
 
 Chaque point sur notre ACP correspond à un gène.
 
-Dans ce cas, il est particulièrement pertinent d'analyser le graphe des variables, car il semble plus lisible et offre des informations riches et significatives. Une observation très intéressante émerge notamment grâce à la deuxième méta-variable (Dim2). Selon le graphe, cet axe semble refléter l'appartenance des gènes à un traitement spécifique. On constate que :
-  -Les valeurs positives sur Dim2 correspondent principalement au traitement 1.
-  -Les valeurs négatives sont plutôt associées au traitement 2.
-  -Concernent les gènes du traitement 3, il semblerai que ses valeurs soient mieux réparties, certaines étant dans le positif et d'autres dans le négatif.
+Dans ce cas, il est particulièrement pertinent d'analyser le graphe des variables (`figure` \ref{fig:ProjVar}), car il semble plus lisible et offre des informations riches et significatives. Une observation très intéressante émerge notamment grâce à la deuxième méta-variable (Dim2). Selon le graphe, cet axe semble refléter l'appartenance des gènes à un traitement spécifique. On constate que :
+
+- Les valeurs positives sur Dim2 correspondent principalement au traitement 1.
+- Les valeurs négatives sont plutôt associées au traitement 2.
+- Concernent les gènes du traitement 3, il semblerai que ses valeurs soient mieux réparties, certaines étant dans le positif et d'autres dans le négatif.
+  
 En ce qui concerne le premier axe (Dim1), qui explique 85,4 % de la variance, on observe qu’il est principalement influencé par les traitements 2 et 3 entre 3 h et 6 h. Ces points se situent à l’extrémité droite de la dimension 1. De plus, leur forte contribution est confirmée par leur couleur rouge sur le graphe, indiquant qu’ils jouent un rôle majeur dans l’explication de la variance sur cet axe.
 
+- Les valeur positives sur Dim1 correspondent principalement au traitement 2 et 3, on peut donc en déduire que les valeur positive de la Dim1 correspondent au comportement des traitement 2 et 3 à l'opposer du traitement 1 quasiment nul sur cette dimension (confirmant les résultat précédent). 
 
-Faites une classification non supervisée (clustering) des gènes à partir de leur expression (DataExpMoy) afin d’obtenir des classes de gènes homogènes (ayant la même évolution d’expression).
 
-```{r,echo=T, error=F,warning=F,message=F}
-if (!require("forcats")) install.packages("forcats")
-if (!require("ggplot2")) install.packages("ggplot2")
-if (!require("corrplot")) install.packages("corrplot")
-if (!require("FactoMineR")) install.packages("FactoMineR")
-if (!require("factoextra")) install.packages("factoextra")
-if (!require("mclust")) install.packages("mclust")
-if (!require("cluster")) install.packages("cluster")
-if (!require("ppclust")) install.packages("ppclust")
-if (!require("circlize")) install.packages("circlize")
-if (!require("ggalluvial")) install.packages("ggalluvial")
-library(forcats)
-library(ggplot2)
-library(corrplot)
-library(reshape2)
+## Classification non supervisée (Clustering) de DataExpMoy
 
-library(FactoMineR)
-library(factoextra)
 
-library(mclust)
-library(cluster)
-library(ppclust)
-
-library(circlize)
-library(ggalluvial)
-
+```{r echo=F, warning=F, message=F}
 # Maintenant que l'ACP a été effectuée, on fait un clustering des classes à l'aide de la méthode K-means.
 
 # Avant de débuter le clustering avec la méthode K-means, il faut déterminer le nombre de classes.
@@ -474,16 +536,23 @@ g2 = fviz_cluster(ExpMoykmeans,data=DataExpMoyCR,ellipse.type="norm",labelsize=8
 dist_matrix_ExpMoy <- dist(DataExpMoyCR, method = "euclidean")
 # Clustering hiérarchique avec la méthode de liaison "ward.D2", on peut aussi faire avec "single", "complete","average" ...
 hc_ExpMoy <- hclust(dist_matrix_ExpMoy, method = "ward.D2") 
-# Afficher le dendrogramme
-g3 = fviz_dend(hc_ExpMoy,k=6,show_labels = FALSE,
-rect = TRUE, rect_fill = TRUE,palette = "npg",
-rect_border = "npg",
-labels_track_height = 0.8)+ggtitle("")
-# (Le temps de chargement est plutôt long)
 
-grid.arrange(g1, g2, g3, nrow=2)
 ```
-```{r,echo=T, error=F,warning=F,message=F}
+
+
+```{r C_Kmeans, echo=F, fig.cap="\\label{fig:C_Kmeans}Clustering de DataExpMoy", fig.height=6}
+grid.arrange(g1, g2, nrow=2)
+
+```
+
+
+```{r C_Hiérar, echo=F, fig.cap="\\label{fig:C_Hiérar}Clustering hiérarchique"}
+# Afficher le dendrogramme
+#fviz_dend(hc_ExpMoy,k=6,show_labels = FALSE, rect = TRUE, rect_fill = TRUE,palette = "npg", rect_border = "npg", labels_track_height = 0.8)+ggtitle("")
+```
+
+
+```{r Alluv, echo=F, fig.cap="\\label{fig:Alluv}Alluvial diagram de la répartition des différents cluster en fonction des l'expression des gènes"}
 
 clust<-paste("DataExpMoy",ExpMoykmeans$cluster,sep="")
 Tab<-melt(table(clust,DataBio[,37])) 
@@ -512,59 +581,35 @@ g3 <- ggplot(Tab,aes(y=value,axis1=clust,axis2=Var2))+
   scale_x_discrete(limits = c("DataExpMoy", "ExpT3"), expand = c(.05, .05))+
   theme(legend.position = "none")
 
+
 grid.arrange(g1,g2,g3,ncol=3)
 
 #Alluvial Diagram
 
 ```
-Analyse des résultats : 
+ 
 
-Lorsque l'on utilise un diagramme alluvial entre nos clusters et les variables qualitatives ExpT1,ExpT2 et ExpT3. On remarque clairement une connexion et un lien entre ces données. Pour ExpT2 et ExptT3, encore une fois très similaires, on remarque que les clusters ExpMoy3 et ExpMoy6 sont liés avec la valeur "Sur". Ce qui signifie que les gènes appartenant à ces clusters montrent une forte surexpression dans les traitements T2 et T3.
+Lorsque l'on utilise un diagramme alluvial entre nos 6 clusters (`figure` \ref{fig:C_Kmeans}) et les variables qualitatives ExpT1,ExpT2 et ExpT3 (`figure` \ref{fig:Alluv}). On remarque clairement une connexion et un lien entre ces données. Pour ExpT2 et ExptT3, encore une fois très similaires, on remarque que les clusters ExpMoy3 et ExpMoy6 sont liés avec la valeur "Sur". Ce qui signifie que les gènes appartenant à ces clusters montrent une forte surexpression dans les traitements T2 et T3.
 Ensuite, ExpMoy4 et ExpMoy5 et ExpMoy2 sont liés à "Sous". Ce qui indique que ces gènes sont sous-exprimés dans les traitements T2 et T3 à 6 heures.
 Enfin, ExpMoy2 est lié à "Non", Cela signifie que les traitements 2 et 3 sont inefficaces face à ses gènes.
 Pour ExpT1, la majorité des clusters sont liés à la classe "Non", ce qui signifie que le traitement 1 semble plutôt inefficace. Cependant, on remarque que ExpMoy2 est lié avec "Sur", ce qui montre l'efficacité de ce traitement pour ces gènes.
 
-Cette analyse montre que si l'on arrive à relier un gène à un certain cluster alors on sait qu'elle traitement utiliser pour les gènes soient surexprimés. Si le gène appartient aux clusters ExpMoy3 ou ExpMoy6 alors il est préférable d'utiliser les traitements 2 ou 3. Si le gène appartient au cluster ExpMoy2 alors il est préférable d'utiliser le traitement 1. Si le gène appartient à ExpMoy4, il est préférable d'utiliser le traitement 1 car même si ce cluster est faiblement lié à "Sur", il s'agit du seul traitement qui peut avoir un effet positif ou nul sur le gène. Si le gène appartient au cluster ExpMoy1 ou ExpMoy5, il semble qu'aucun traitement ne puisse surexprimé le gène.
+Cette analyse montre que si l'on arrive à relier un gène à un certain cluster alors on sait quelle traitement utiliser pour les gènes soient surexprimés. Si le gène appartient aux clusters ExpMoy3 ou ExpMoy6 alors il est préférable d'utiliser les traitements 2 ou 3. Si le gène appartient au cluster ExpMoy2 alors il est préférable d'utiliser le traitement 1. Si le gène appartient à ExpMoy4, il est préférable d'utiliser le traitement 1 car même si ce cluster est faiblement lié à "Sur", il s'agit du seul traitement qui peut avoir un effet positif ou nul sur le gène. Si le gène appartient au cluster ExpMoy1 ou ExpMoy5, il semble qu'aucun traitement ne puisse surexprimé le gène.
 
 
-Faites une classification non supervisée (clustering) des gènes à partir des variables ExpT1, ExpT2 et ExpT3. Comparez avec les résultats de la question précédente.
-
-```{r echo=F, warning=F, message=F}
-set.seed(123)
-
-Kmax<-8
-reskmeanscl<-matrix(0,nrow=nrow(ExpT),ncol=Kmax)
-Iintra<-NULL
-for (k in 1:Kmax){
-  afcm = MCA(ExpT,quali.sup=3,graph=F)
-  coeff = afcm$ind$coord
-  reseaux = kmeans(coeff,k)
-  reskmeanscl[,k]<-resaux$cluster
-  Iintra<-c(Iintra,resaux$tot.withinss) # tot.withinss correspond à la somme des composantes au carré des éléments du cluster par cluster
-}
-
-df<-data.frame(K=1:8,Iintra=Iintra)
-ggplot(df,aes(x=K,y=Iintra))+
-  geom_line()+
-  geom_point()+
-  xlab("Nombre de classes")+
-  ylab("Inertie intraclasse")
-
-afcm = MCA(ExpT,quali.sup=3,graph=F)
-fviz_mca_ind(X = afcm, geom=c("point"), axes=c(1,3), habillage=1)
-
-#-------------------------------------
-
-coeff = afcm$ind$coord
-clkmeans = kmeans(coeff,2)
-fviz_cluster(clkmeans, data=coeff,ellipse.type="norm",labelsize=8,geom=c("point"))+ggtitle("")
+## Classification non supervisée (Clustering) de ExpT
 
 
-ClustExpT = clara(ExpT, 2, metric = c("euclidean"))
-fviz_cluster(ClustExpT,data=ExpT,ellipse.type="norm",labelsize=8,geom=c("point"))+ggtitle("")
+```{r ClustExpT, echo=F, fig.cap="\\label{fig:ClustExpT}Cluster des gènes à partir des variable ExpT"}
+ClustExpT = pam(ExpT, 2, metric = c("euclidean"))
+fviz_cluster(ClustExpT, data=ExpT, ellipse=TRUE, ellipse.type="convex", labelsize=8, geom=c("point")) + ggtitle("")
 
 ```
 
-Interprétation et comparaison avec le graph précédents
 
+Ce clutering en deux classe visible sur `la figure` \ref{fig:ClustExpT} nous permet de voir avec un peu plus de précision le comportement des trois traitement diviser en 2 grande classe avec une regroupant les gènes ayant une expression au cours du temps suivant le comportement des traitement 2 et 3 et l'autre regroupant les gènes suivant le comportement du traitement 1.
 
+\newpage
+
+# Conclusion
+Pour conclure
