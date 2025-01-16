@@ -322,14 +322,11 @@ grid.arrange(g1, g2, g3, nrow=2)
 
 ```
 
-
-
-
-
-
 Interprétation du Clustering :
-En premier lieu, on remarque que nos 2 Clustering (avec méthode K-means et méthode hiérarchique) nous donnent les même résultats, on obtient les mêmes groupes avec le même nombre d'individus pour les 2 clustering.
-Pour le Clustering avec la méthode des K-means, on remarque que les clusters sont bien séparés, on peut en déduire que les groupes d'individus sont nettement différents.
+En premier lieu, on remarque que nos 3 Clustering (avec méthode K-means et méthode hiérarchique) nous donnent les même résultats, on obtient les mêmes groupes avec le même nombre d'individus pour les 3 clustering.
+Dans le cadre du clustering avec la méthode des K-means, on observe que les clusters sont bien distincts, ce qui indique que les groupes d'individus présentent des différences marquées. Ce résultat de clustering n'est d'ailleurs pas surprenant : lorsqu'on le compare à l'ACP basée sur le classement par traitements, on constate qu'une des classes était prévisible. Je parle de la classe "bleue" (située à gauche), qui est composée presque exclusivement du traitement 1. Les seuls points supplémentaires dans cette classe, sont au nombre de 4, et correspondent aux traitements 2 et 3 à l’heure 1 pour les deux réplicats.
+
+En ce qui concerne les deux autres classes, elles apparaissent comme des "fusions" des traitements 2 et 3, suggérant une proximité ou une similarité entre ces deux traitements dans les dimensions considérées.
 
 Préliminairement, construisez un jeu de données DataExpMoy contenant la moyenne des expressions sur les réplicats de chaque g`ene, pour chaque traitement et chaque heure. DataExpMoy est
 donc une matrice de taille G × 18. Vous pourrez utiliser les variables ExpT1, ExpT2 et ExpT3
