@@ -14,7 +14,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 Chargement du jeux de donnée:
- Décrivez l’ensemble du jeu de données en précisant la nature des variables
+ Décrivez l’ensemble du jeu de données en précisant la nature des variables.
+
+En premier lieu, l'analyse du jeu de données révèle qu'il contient à la fois des variables qualitatives et quantitatives. Les variables quantitatives correspondent aux 36 premières colonnes, réparties en deux catégories : les colonnes 1 à 18 pour le réplicat 1 (R1) et les colonnes 19 à 36 pour le réplicat 2 (R2). Ces deux réplicats seront comparés au cours de l’analyse.
+
+Chaque réplicat est subdivisé en trois traitements distincts (T1, T2, T3). Il est important de noter que T3 est une combinaison des traitements T1 et T2, une information essentielle pour les analyses ultérieures. De plus, chaque traitement est décomposé en six heures d’observation, allant de 1 heure à 6 heures. Ainsi, chaque colonne des variables quantitatives peut être désignée par la notation Tt_sH_Rr, où t représente le traitement, s l’heure, et r le réplicat.
+
+Les variables qualitatives, quant à elles, sont contenues dans les colonnes 37 à 39. Ces colonnes (ExpT1, ExpT2 et ExpT3) indiquent les états "Sur", "Sous" ou "Non".
 
 ```{r echo=F, warning=F,message=F}
 if (!require("ggplot2")) install.packages("ggplot2")
