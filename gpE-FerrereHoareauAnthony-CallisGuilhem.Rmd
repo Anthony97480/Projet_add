@@ -392,6 +392,11 @@ g2 = fviz_pca_ind(ACP_DataExpMoy_reduite, geom = c("point"),col.ind = "cos2", gr
 
 grid.arrange(g1, g2, nrow=2)
 
+# Projection des variables
+fviz_pca_var(ACP_DataExpMoy_reduite, col.var = "contrib", 
+             gradient.cols = c("blue", "red"), repel = TRUE,
+             title = "Combinaison Traitement/Heure")
+
 ```
 
 Interprétation des Résultats : 
@@ -400,8 +405,11 @@ En premier lieu, lorsqu'on regarde notre graphe des valeurs propres, on remarque
 
 Chaque point sur notre ACP correspond à un gène.
 
-Dans ce cas, il est très pertinant d'analyser le graphe des variables car le graphe semble plus lisible et semble apporter des informations pertinantes. On remarque quelque chose de très intéressant notamment à l'aide de la deuxième meta-variable. D'après le graphe, on a l'impression que cet axe mesure l'appartenance d'un gène à un traitement. On remarque que les valeurs positives correspondent au traitement 1, les valeurs négatives au traitement 2 et les valeurs positives proches ou égal à 0 sont les gènes du traitement 3. (pas terminé)
-
+Dans ce cas, il est particulièrement pertinent d'analyser le graphe des variables, car il semble plus lisible et offre des informations riches et significatives. Une observation très intéressante émerge notamment grâce à la deuxième méta-variable (Dim2). Selon le graphe, cet axe semble refléter l'appartenance des gènes à un traitement spécifique. On constate que :
+  -Les valeurs positives sur Dim2 correspondent principalement au traitement 1.
+  -Les valeurs négatives sont plutôt associées au traitement 2.
+  -Concernent les gènes du traitement 3, il semblerai que ses valeurs soient mieux réparties, certaines étant dans le positif et d'autres dans le négatif.
+En ce qui concerne le premier axe (Dim1), qui explique 85,4 % de la variance, on observe qu’il est principalement influencé par les traitements 2 et 3 entre 3 h et 6 h. Ces points se situent à l’extrémité droite de la dimension 1. De plus, leur forte contribution est confirmée par leur couleur rouge sur le graphe, indiquant qu’ils jouent un rôle majeur dans l’explication de la variance sur cet axe.
 
 
 Faites une classification non supervisée (clustering) des gènes à partir de leur expression (DataExpMoy) afin d’obtenir des classes de gènes homogènes (ayant la même évolution d’expression).
