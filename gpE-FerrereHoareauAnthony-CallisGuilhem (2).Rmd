@@ -519,7 +519,7 @@ g1 = ggplot(df,aes(x=K,y=Iintra))+
 # On va alors utiliser 6 classes pour la méthode des K-means.
 
 ExpMoykmeans<-kmeans(DataExpMoy,centers = 6)
-g2 = fviz_cluster(ExpMoykmeans,data=DataExpMoyCR,ellipse.type="norm",labelsize=8,geom=c("point"))+ggtitle("")
+g2 = fviz_cluster(ExpMoykmeans,data=DataExpMoy,ellipse.type="norm",labelsize=8,geom=c("point"))+ggtitle("")
 
 # A présent, on va essayer une autre méthode, la méthode hiérarchique.
 # D'une part, on fait le calcul de la matrice de distances
