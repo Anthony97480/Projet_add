@@ -99,6 +99,8 @@ corrplot(M_cor, method="ellipse", tl.cex=0.4)
 
 On peut constater sur `la figure` \ref{fig:corrDataBio} que, dans notre jeu de données, les traitements 2 et 3, quel que soit leur réplicat, sont fortement corrélés entre eux. En revanche, le traitement 1 montre un comportement différent, notamment à la 6ème heure pour le réplicat 2, où une correlation négative avec les autres variables est observée.Cela indique un comportement différent du traitement 1 par rapport aux deux autres. Cela nous permet également de poser l'hypothèse que le traitement 3 (rappelons qu'il s'agit d'une combinaison des deux autres traitements) serait majoritairement influencé par le comportement du traitement 2, entraînant des variations génétiques fortement similaires à celles observées dans le traitement 2.
 
+\newpage
+
 # Analyse dimentionnelle du jeu de données
 
 ## Analyse uni-dimensionnelle
@@ -245,6 +247,8 @@ Ce degré de liaison reflète ici la proximité entre l’évolution de l'expres
 On constate pour le premier traitement que, malgré une évolution croissante du degré de liaison, celui-ci varie fortement en fonction du temps, que ce soit pour le premier ou le second réplicat, avec des diminutions à 2h, 3h et 5h. De plus, ce degré atteint un maximum de 0.56 pour le premier réplicat et de 0.46 pour le deuxième réplicat, indiquant une forte évolution au cours du temps des gènes de la plante lors du traitement. Ce traitement prend plus de temps à agir que les deux autres, puisqu’il n’est semblable qu’à 50% au résultat final attendu pour ce traitement au bout de 6h.
 Les deux autres traitements, quant à eux, ayant une forte similarité, comme constaté précédemment, présentent une courbe d'évolution du degré de liaison très similaire. On peut donc en conclure que ces deux traitements agissent dans un même laps de temps et beaucoup plus rapidement que le premier traitement, avec beaucoup moins de variation de l'expression des gènes au cours du temps. Étant donné que les courbes sont logarithmiques, on constate de forts changements dans l'expression des gènes au départ, mais ces changements diminuent au fil du temps.
 On peut donc en déduire que, contrairement au premier traitement, qui reste fortement actif sur la plante tout au long de l'expérience malgré une forte présence de gènes non actifs et qui prend beaucoup de temps à agir, les deux autres traitements sont principalement actifs sur la plante au début de l'expérience. Leur influence et la variation de l'expression des gènes diminuent avec le temps. Ils sont donc, en comparaison avec le résultat mesuré à 6h, bien plus rapides et efficaces que le traitement 1.
+
+
 ### Analyse sur les variables quantitatives
 
 Pour cette analyse, nous avons décidé de représenter à nouveau la matrice de corrélations de la première partie, mais en réalisant un zoom sur les différents traitements.
@@ -597,15 +601,20 @@ fviz_cluster(ClustExpT, data=ExpT, ellipse=TRUE, ellipse.type="convex", labelsiz
 ```
 
 
-Ce clutering en deux classes, visible sur `la figure` \ref{fig:ClustExpT}}, nous permet de voir avec plus de précision le comportement des trois traitements, divisés en deux grandes classes. L'une regroupe les gènes dont l'expression au cours du temps suit le comportement des traitements 2 et 3, et l'autre regroupe les gènes dont l'expression suit le comportement du traitement 1.
 
+Ce clustering en deux classes, visible sur `la figure` \ref{fig:ClustExpT}, nous permet de voir avec plus de précision le comportement des trois traitements, divisés en deux grandes classes de points relativement éloignés les uns des autres. On pourrait donc ici en déduire, à partir des résultats des analyses précédentes, que l'une regroupe les gènes dont l'expression au cours du temps suit le comportement des traitements 2 et 3, et l'autre regroupe les gènes dont l'expression suit le comportement du traitement 1. 
 
-\newpage
+Si nous comparons les résultats obtenus avec l'analyse précédente utilisant *DataExpMoy*, qui contient 6 clusters et deux dimensions principales pour l'ACP, ces résultats mettent en évidence les comportements concernant l'évolution de l'expression des gènes selon le traitement utilisé. 
+
+Ainsi, ce clustering, réalisé à partir des informations sur l'expression des gènes à 6 heures pour chaque traitement, met en évidence les mêmes résultats que ceux constatés sur le diagramme alluvial (`figure` \ref{fig:Alluv}) et plus généralement tout au long de l'analyse. Ces résultats soulignent une très forte similarité, pour un grand nombre de gènes, au niveau de leur expression chez les plantes ayant expérimenté le traitement 2 et chez celles ayant expérimenté le traitement 3, ainsi qu'une forte différence au niveau des gènes des plantes ayant expérimenté le traitement 1. 
+
+Le cluster de `la figure` \ref{fig:ClustExpT} représenterait donc les gènes en fonction de si leur expression, 6 heures après le traitement, se rapproche ou non du comportement général issu du traitement 3 (ou du traitement 2) ou du traitement 1, moins efficace et présentant des divergences (comme l'expression des gènes à la 6ème heure pour le réplicat 2). Cela nous montrerait comment réagissent les gènes face aux traitements et nous permettrait de choisir le meilleur traitement (voire de mieux comprendre le fonctionnement de certains gènes afin de créer de nouveaux traitements adaptés à nos besoins) en fonction des résultats attendus de l'expression des gènes chez la plante.
+
 
 # Conclusion
 Pour conclure, voici un bilan des principales hypothèses démontrées au cours de cette analyse de données. Tout d'abord, nous avons montré que les réplicats 1 et 2 étaient cohérents, grâce à l'ACP sur Tt_sH_Rr ainsi que l'analyse des variables qualitatives et quantitatives. Ensuite, nous avons mis en évidence les fortes similarités entre les traitements 2 et 3, qui présentent des comportements similaires. En revanche, nous avons observé que le traitement 1 agissait de manière différente, notamment à l'heure 6 dans le réplicat 2 (T1_6H_R2), une variable dont l'expression était atypique. Cette observation avait déjà été soulevée dans la matrice de corrélation, où nous avions remarqué que cette variable avait une corrélation négative avec les traitements 2 et 3, indiquant un comportement distinct. En outre, dans l'ACP, cette variable se situe loin du centre, jouant ainsi un rôle important dans la variation des données.
 
-De plus, lors de l'analyse des expressions des gènes, nous avions déjà pu déduire, dans la partie bi-dimensionnelle sur les variables qualitatives, que le traitement 1 serait moins efficace que les autres, notamment en raison du grand nombre de gènes non exprimés au bout de six heures. Par la suite, grâce à l'ACP, au clustering basé sur les moyennes d'expression des réplicats de chaque gène et au diagramme alluvial, nous avons observé une corrélation entre le clustering et l'expression des gènes selon le traitement. Ce diagramme nous a permis de conclure que, bien que le traitement 1 ne soit pas aussi efficace que les traitements 2 et 3, il reste pertinent dans certains cas, notamment pour les gènes appartenant aux clusters ExpMoy2 et ExpMoy4.
+De plus, lors de l'analyse des expressions des gènes, nous avions déjà pu déduire, dans la partie bi-dimensionnelle sur les variables qualitatives, que le traitement 1 serait moins efficace que les autres, notamment en raison du grand nombre de gènes non exprimés au bout de six heures. Par la suite, grâce à l'ACP, au clustering basé sur les moyennes d'expression des réplicats de chaque gène et au diagramme alluvial, nous avons observé une corrélation entre le clustering et l'expression des gènes selon le traitement. Ce diagramme nous a permis de conclure que, bien que le traitement 1 ne soit pas aussi efficace que les traitements 2 et 3, il reste cependant pertinent dans certains cas, notamment pour les gènes appartenant aux clusters ExpMoy2 et ExpMoy4.
 
 
 
