@@ -349,10 +349,10 @@ Elle est éloignée du centre, indiquant une réponse atypique ou spécifique pa
 
 set.seed(123) 
 Kmax<-20
-reskmeanscl<-matrix(0,nrow=nrow(DataBioCR),ncol=Kmax)
+reskmeanscl<-matrix(0,nrow=nrow(Tt_sH_Rr),ncol=Kmax)
 Iintra<-NULL
 for (k in 1:Kmax){
-  resaux<-kmeans(DataBioCR,centers=k)
+  resaux<-kmeans(Tt_sH_Rr,centers=k)
   reskmeanscl[,k]<-resaux$cluster
   Iintra<-c(Iintra,resaux$tot.withinss) # tot.withinss correspond à la somme des composantes au carré des éléments du cluster par cluster
 }
@@ -367,14 +367,14 @@ g1 = ggplot(df,aes(x=K,y=Iintra))+
 # Avec cette méthode, on dirait que le coude correspond lorsque le nombre de classes est de 3.
 # On va alors utiliser 3 classes pour la méthode des K-means.
 
-reskmeans<-kmeans(DataBioCR,centers = 3)
+reskmeans<-kmeans(Tt_sH_Rr,centers = 3)
 g2 = fviz_cluster(reskmeans,data=Tt_sH_Rr,
              ellipse.type="norm",labelsize=8,
              geom=c("point"))+ggtitle("")
 
 # A présent, on va essayer une autre méthode : la méthode hiérarchique.
 # D'une part, on fait le calcul de la matrice de distances
-dist_matrix <- dist(DataBioCR, method = "euclidean")
+dist_matrix <- dist(Tt_sH_Rr, method = "euclidean")
 # Clustering hiérarchique avec la méthode de liaison "ward.D2", on peut aussi faire avec "single", "complete","average" ...
 hc <- hclust(dist_matrix, method = "ward.D2") 
 # Afficher le dendrogramme
